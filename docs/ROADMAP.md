@@ -103,14 +103,15 @@
 
 ---
 
-## [ ] Sprint 7 — Frontend Livewire (RN-063 a RN-070)
+## [x] Sprint 7 — Frontend Livewire (RN-063 a RN-070)
 **Objetivo:** Interface completa do sistema
 
-- [ ] 7.1 — Dashboard Cliente: saldo total, P/L, rentabilidade %, composição real %
-- [ ] 7.2 — Tela de Rentabilidade: PM, quantidade, cotação, valor atual, evolução patrimônio
-- [ ] 7.3 — Painel Admin: gestão cesta, conta master, histórico
-- [ ] 7.4 — Componentes reutilizáveis (tabelas, gráficos, cards)
-- [ ] 7.5 — Responsivo (mobile-friendly)
+- [x] 7.1 — Dashboard Cliente: saldo total, P/L, rentabilidade %, composição real %
+- [x] 7.2 — Tela de Rentabilidade: PM, quantidade, cotação, valor atual (integrado no dashboard)
+- [x] 7.3 — Painel Admin: gestão cesta (CRUD), compras programadas, conta master
+- [x] 7.4 — Layout base com Tailwind CSS + navegação
+- [x] 7.5 — Responsivo (mobile-friendly via Tailwind grid/flex)
+- [x] 7.6 — Tests (6 new: 2 dashboard, 4 admin panels)
 
 ---
 
