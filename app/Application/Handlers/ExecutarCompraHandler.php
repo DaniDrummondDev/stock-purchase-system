@@ -15,9 +15,11 @@ use App\Domain\PurchaseEngine\Repositories\CompraProgramadaRepositoryInterface;
 use App\Domain\PurchaseEngine\Repositories\CustodiaMasterRepositoryInterface;
 use App\Domain\PurchaseEngine\Services\ConsolidacaoService;
 use App\Domain\PurchaseEngine\Services\DistribuicaoService;
+use App\Domain\Tax\Services\DedoDuroService;
 use App\Infrastructure\Persistence\Models\CompraDistribuicao;
 use App\Infrastructure\Persistence\Models\CompraParticipante;
 use App\Infrastructure\Persistence\Models\CompraProgramada;
+use App\Infrastructure\Persistence\Models\OperacaoIR;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -32,6 +34,7 @@ class ExecutarCompraHandler
         private CustodiaMasterRepositoryInterface $custodiaMasterRepository,
         private ConsolidacaoService $consolidacaoService,
         private DistribuicaoService $distribuicaoService,
+        private DedoDuroService $dedoDuroService,
     ) {}
 
     public function handle(ExecutarCompraCommand $command): array
@@ -177,6 +180,21 @@ class ExecutarCompraHandler
                     quantidade: $alocacao['quantidade'],
                     precoUnitario: $preco,
                 ));
+
+                // RN-053/054: IR Dedo-Duro sobre cada distribuição
+                $irDedoDuro = $this->dedoDuroService->calcular($valor);
+
+                if ($irDedoDuro > 0) {
+                    OperacaoIR::create([
+                        'cliente_id' => $alocacao['clienteId'],
+                        'tipo' => 'dedo_duro',
+                        'ticker' => $alocacao['ticker'],
+                        'valor_operacao' => $valor,
+                        'imposto' => $irDedoDuro,
+                        'mes_referencia' => substr($command->dataExecucao, 0, 7),
+                        'publicado_kafka' => false,
+                    ]);
+                }
             }
 
             // Update master balances with residues (RN-039)

@@ -79,15 +79,15 @@
 
 ---
 
-## [ ] Sprint 5 — IR e Kafka (RN-053 a RN-062)
+## [x] Sprint 5 — IR e Kafka (RN-053 a RN-062)
 **Objetivo:** Cálculo de impostos e publicação no Kafka
 
-- [ ] 5.1 — IR Dedo-Duro: 0.005% sobre valor de cada operação
-- [ ] 5.2 — IR Vendas: 20% sobre lucro líquido (vendas > R$20k/mês)
-- [ ] 5.3 — Isenção: vendas ≤ R$20k/mês para PF
-- [ ] 5.4 — Producer Kafka: tópicos `ir-dedo-duro` e `ir-venda`
-- [ ] 5.5 — Formato mensagens (Tipo 01 e 02)
-- [ ] 5.6 — Tests integração com Kafka
+- [x] 5.1 — IR Dedo-Duro: 0.005% sobre valor de cada operação — DedoDuroService
+- [x] 5.2 — IR Vendas: 20% sobre lucro líquido (vendas > R$20k/mês) — IRVendaService
+- [x] 5.3 — Isenção: vendas ≤ R$20k/mês, prejuízo = IR R$0
+- [x] 5.4 — Producer Kafka: KafkaProducer + IRDedoDuroMessage + IRVendaMessage
+- [x] 5.5 — Formato mensagens (Tipo 01 e 02) conforme spec
+- [x] 5.6 — Tests (13 new: 5 DedoDuro, 6 IRVenda, 2 integration)
 
 ---
 
