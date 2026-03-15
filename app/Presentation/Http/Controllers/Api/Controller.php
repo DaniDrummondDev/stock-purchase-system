@@ -11,6 +11,4 @@ use OpenApi\Attributes as OA;
     contact: new OA\Contact(name: 'API Support', email: 'support@stockpurchase.local')
 )]
 #[OA\Server(url: 'http://localhost:8000', description: 'Local Development')]
-abstract class Controller
-{
-}
+abstract class Controller {}

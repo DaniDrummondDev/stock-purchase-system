@@ -5,7 +5,9 @@ namespace App\Domain\Client\Entities;
 class ContaGrafica
 {
     private string $id;
+
     private string $clienteId;
+
     private string $numero;
 
     public function __construct(string $id, string $clienteId, string $numero)
@@ -32,6 +34,6 @@ class ContaGrafica
 
     public static function gerarNumero(): string
     {
-        return 'CG-' . strtoupper(substr(md5(uniqid()), 0, 8));
+        return 'CG-'.strtoupper(substr(md5(uniqid()), 0, 8));
     }
 }

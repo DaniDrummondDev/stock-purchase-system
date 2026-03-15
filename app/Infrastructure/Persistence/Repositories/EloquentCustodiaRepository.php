@@ -28,7 +28,7 @@ class EloquentCustodiaRepository implements CustodiaRepositoryInterface
 
     public function save(CustodiaEntity $custodia): void
     {
-        $model = CustodiaModel::find($custodia->id()) ?? new CustodiaModel();
+        $model = CustodiaModel::find($custodia->id()) ?? new CustodiaModel;
         $model->id = $custodia->id();
         $model->fill([
             'cliente_id' => $custodia->clienteId(),

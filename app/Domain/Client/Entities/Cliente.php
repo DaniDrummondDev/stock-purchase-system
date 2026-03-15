@@ -10,15 +10,23 @@ use InvalidArgumentException;
 class Cliente
 {
     public const VALOR_MENSAL_MINIMO = 10000; // R$ 100,00 em centavos
+
     public const STATUS_ATIVO = 'ativo';
+
     public const STATUS_INATIVO = 'inativo';
 
     private string $id;
+
     private string $nome;
+
     private Cpf $cpf;
+
     private Email $email;
+
     private Money $valorMensal;
+
     private string $status;
+
     private Money $valorTotalInvestido;
 
     public function __construct(

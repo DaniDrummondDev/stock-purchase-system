@@ -17,7 +17,7 @@ class EloquentContaGraficaRepository implements ContaGraficaRepositoryInterface
 
     public function save(ContaGraficaEntity $contaGrafica): void
     {
-        $model = ContaGraficaModel::find($contaGrafica->id()) ?? new ContaGraficaModel();
+        $model = ContaGraficaModel::find($contaGrafica->id()) ?? new ContaGraficaModel;
         $model->id = $contaGrafica->id();
         $model->fill([
             'cliente_id' => $contaGrafica->clienteId(),

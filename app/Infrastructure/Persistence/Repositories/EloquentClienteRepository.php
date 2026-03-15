@@ -32,7 +32,7 @@ class EloquentClienteRepository implements ClienteRepositoryInterface
 
     public function save(ClienteEntity $cliente): void
     {
-        $model = ClienteModel::find($cliente->id()) ?? new ClienteModel();
+        $model = ClienteModel::find($cliente->id()) ?? new ClienteModel;
         $model->id = $cliente->id();
         $model->fill([
             'nome' => $cliente->nome(),

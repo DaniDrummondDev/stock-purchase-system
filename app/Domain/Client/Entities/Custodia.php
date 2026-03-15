@@ -8,9 +8,13 @@ use InvalidArgumentException;
 class Custodia
 {
     private string $id;
+
     private string $clienteId;
+
     private string $ticker;
+
     private int $quantidade;
+
     private Money $precoMedio;
 
     public function __construct(
