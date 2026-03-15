@@ -77,8 +77,26 @@ docker compose exec app php artisan key:generate
 # 7. Execute as migrations
 docker compose exec app php artisan migrate
 
-# 8. Pronto!
+# 8. Crie os utilizadores de teste
+docker compose exec app php artisan db:seed
+
+# 9. Pronto!
 ```
+
+### Utilizadores de Teste
+
+O seed cria 6 utilizadores prontos para uso (password: `password`):
+
+| Email | Role | Descrição |
+|-------|------|-----------|
+| `admin@sps.local` | admin | Gestão total do sistema |
+| `analyst@sps.local` | analyst | Visualiza dados, gere cestas |
+| `auditor@sps.local` | auditor | Apenas leitura + logs |
+| `joao@sps.local` | client | Cliente de teste |
+| `maria@sps.local` | client | Cliente de teste |
+| `carlos@sps.local` | client | Cliente de teste |
+
+O seeder é idempotente — pode ser executado múltiplas vezes sem duplicar dados.
 
 ### Acessos
 
