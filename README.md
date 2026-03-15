@@ -1,59 +1,154 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Stock Purchase System (Compra Programada de Ações)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![CI](https://github.com/DaniDrummondDev/stock-purchase-system/actions/workflows/ci.yml/badge.svg)](https://github.com/DaniDrummondDev/stock-purchase-system/actions/workflows/ci.yml)
 
-## About Laravel
+## Motivação
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Este projeto nasceu de um desafio técnico da **Itaú Corretora** para desenvolver um sistema de compra programada de ações. O desafio original foi pensado para .NET/C#, mas decidi adaptá-lo para o stack com que trabalho no dia a dia — **PHP/Laravel** — mantendo todas as regras de negócio do desafio original e indo além: adicionei integração com IA (recomendação de cesta, análise de risco, assistente virtual), agentes financeiros especializados, e uma camada de segurança baseada no OWASP Top 10 2025.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+O objectivo não é apenas resolver o desafio, mas construir um sistema completo que demonstre boas práticas de arquitectura (DDD, CQRS, Event Sourcing), infraestrutura moderna (Docker, Kafka, pgvector), e integração inteligente com LLMs.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
 
-## Learning Laravel
+| Componente | Tecnologia |
+|-----------|------------|
+| Backend | PHP 8.3 + Laravel 12 |
+| Database | PostgreSQL 16 + pgvector |
+| Cache/Queue | Redis 7 |
+| Messaging | Apache Kafka (Confluent) |
+| Frontend | Livewire |
+| Testing | Pest PHP |
+| AI | laravel/ai SDK (Anthropic, OpenAI, Gemini, Voyage AI) |
+| CI | GitHub Actions |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Arquitectura
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Monolito Modular DDD com CQRS e Event Sourcing (PurchaseEngine).
 
-## Laravel Sponsors
+```
+app/
+├── Domain/           # Lógica de domínio pura, sem dependências do framework
+│   ├── Client/       # Gestão de clientes, conta gráfica, custódia
+│   ├── Basket/       # Cesta Top Five
+│   ├── PurchaseEngine/  # Motor de compra programada (Event Sourced)
+│   ├── Rebalancing/  # Rebalanceamento tipo A e B
+│   ├── MarketData/   # Parser COTAHIST, cotações B3
+│   ├── Tax/          # IR Dedo-Duro e IR Vendas
+│   └── AI/           # Recomendação, análise de risco, assistente virtual
+├── Application/      # Commands, Queries, Handlers (CQRS)
+├── Infrastructure/   # Eloquent, Kafka, AI clients
+└── Presentation/     # Controllers, Livewire, Views
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Setup
 
-### Premium Partners
+### Pré-requisitos
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- [Docker](https://docs.docker.com/get-docker/) e Docker Compose
+- [Git](https://git-scm.com/)
 
-## Contributing
+### Instalação
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# 1. Clone o repositório
+git clone git@github.com:DaniDrummondDev/stock-purchase-system.git
+cd stock-purchase-system
 
-## Code of Conduct
+# 2. Copie o ficheiro de ambiente
+cp .env.example .env
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 3. Configure as variáveis de ambiente
+#    Edite .env e preencha:
+#    - DB_PASSWORD=sps_secret
+#    - DB_HOST=postgres
+#    - REDIS_HOST=redis
+#    - KAFKA_BROKERS=kafka:29092
+#    (ou simplesmente use os valores do Docker Compose)
 
-## Security Vulnerabilities
+# 4. Suba os containers
+docker compose up -d
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 5. Instale as dependências
+docker compose exec app composer install
 
-## License
+# 6. Gere a application key
+docker compose exec app php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 7. Execute as migrations
+docker compose exec app php artisan migrate
+
+# 8. Pronto!
+```
+
+### Acessos
+
+| Serviço | URL |
+|---------|-----|
+| Aplicação | http://localhost:8000 |
+| Kafka UI | http://localhost:8080 |
+| PostgreSQL | localhost:5432 (user: `sps_user`) |
+| Redis | localhost:6379 |
+
+## Rotas da API
+
+### Clientes
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/clientes/adesao` | Adesão de novo cliente ao programa |
+| `POST` | `/api/clientes/{clienteId}/saida` | Saída do cliente do programa |
+| `PUT` | `/api/clientes/{clienteId}/valor-mensal` | Alterar valor mensal de investimento |
+| `GET` | `/api/clientes/{clienteId}/carteira` | Consultar carteira do cliente |
+
+### Exemplos
+
+**Adesão:**
+```bash
+curl -X POST http://localhost:8000/api/clientes/adesao \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "João Silva",
+    "cpf": "12345678909",
+    "email": "joao@email.com",
+    "valorMensal": 1000.00
+  }'
+```
+
+**Consultar carteira:**
+```bash
+curl http://localhost:8000/api/clientes/{clienteId}/carteira
+```
+
+## Testes
+
+```bash
+# Todos os testes
+docker compose exec app vendor/bin/pest
+
+# Apenas unit tests
+docker compose exec app vendor/bin/pest --testsuite=Unit
+
+# Apenas feature tests
+docker compose exec app vendor/bin/pest --testsuite=Feature
+
+# Com coverage
+docker compose exec app vendor/bin/pest --coverage
+
+# Lint (code style)
+docker compose exec app vendor/bin/pint --test
+```
+
+## Documentação
+
+| Documento | Descrição |
+|-----------|-----------|
+| [Roadmap](docs/ROADMAP.md) | Progresso por sprint com checklist |
+| [System Design](docs/superpowers/specs/2026-03-15-stock-purchase-system-design.md) | Arquitectura, data model, regras de negócio |
+| [Finance Agents](docs/superpowers/specs/2026-03-15-finance-agents-design.md) | Agentes IA especializados em finanças |
+| [Security](docs/superpowers/specs/2026-03-15-security-design.md) | OWASP Top 10 2025, auth, RBAC, rate limiting |
+| [Regras de Negócio](docs/teste_itau_v2-main/regras-negocio-detalhadas.md) | RN-001 a RN-070 (desafio original) |
+| [API Contracts](docs/teste_itau_v2-main/exemplos-contratos-api.md) | Contratos e error codes |
+
+## Licença
+
+MIT

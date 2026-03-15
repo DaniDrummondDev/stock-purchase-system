@@ -11,14 +11,14 @@
 - [x] 0.2 — Projeto Laravel com estrutura DDD de pastas
 - [x] 0.3 — Configuração de packages (Event Sourcing, Auditing, Livewire, Pest)
 - [x] 0.4 — Migrations iniciais (17 tabelas) — pgvector conditional for SQLite compat
-- [ ] 0.5 — CI base (GitHub Actions: lint, tests)
+- [x] 0.5 — CI base (GitHub Actions: lint, tests, security audit)
 - [x] 0.6 — CLAUDE.md com convenções do projeto
 - [x] 0.7 — Swagger/OpenAPI base
 - [x] 0.8 — Configuração AI (laravel/ai, AiConfigResolver, ai_configurations table)
 
 ---
 
-## [ ] Sprint 1 — Gestão de Clientes (RN-001 a RN-013)
+## [x] Sprint 1 — Gestão de Clientes (RN-001 a RN-013)
 **Objetivo:** CRUD completo de clientes com regras de negócio
 
 - [x] 1.1 — Value Objects (CPF, Email, Money) — CPF with check digits, Money cents-based
@@ -30,8 +30,8 @@
 - [x] 1.7 — CQRS Query + Handler (ObterCarteira)
 - [x] 1.8 — API Controller + Routes (4 endpoints) — OpenAPI annotations
 - [x] 1.9 — Unit Tests (40 passing) — CPF, Email, Money, Cliente, Custodia
-- [ ] 1.10 — Feature Tests (API) — 9 tests failing, Pest TestCase config issue
-- [ ] 1.11 — Fix Redis extension in Docker — Class "Redis" not found
+- [x] 1.10 — Feature Tests (API) — 9 tests, 21 assertions, all passing
+- [x] 1.11 — Redis extension in Docker — already installed, confirmed working
 
 ---
 
