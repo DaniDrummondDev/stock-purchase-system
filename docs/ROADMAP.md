@@ -35,17 +35,17 @@
 
 ---
 
-## [ ] Sprint 2 — Cesta Top Five (RN-014 a RN-019)
+## [x] Sprint 2 — Cesta Top Five (RN-014 a RN-019)
 **Objetivo:** Gestão da cesta de ações recomendada
 
-- [ ] 2.1 — Domain Entities (Cesta, CestaAtivo)
-- [ ] 2.2 — Validações: exatamente 5 ativos, soma = 100%
-- [ ] 2.3 — CQRS Commands (CriarCesta, AlterarCesta)
-- [ ] 2.4 — CQRS Queries (ObterCestaAtual, ObterHistoricoCesta)
-- [ ] 2.5 — API Endpoints (POST criar/atualizar, GET atual, GET histórico)
-- [ ] 2.6 — Domain Events (CestaCriada, CestaAlterada)
-- [ ] 2.7 — Painel admin básico (Livewire)
-- [ ] 2.8 — Tests
+- [x] 2.1 — Domain Entities (Cesta, CestaAtivo) + Value Objects (Percentual, Ticker)
+- [x] 2.2 — Validações: exatamente 5 ativos, soma = 100%, percentual > 0, tickers únicos
+- [x] 2.3 — CQRS Commands (CriarCesta, AlterarCesta)
+- [x] 2.4 — CQRS Queries (ObterCestaAtual, ObterHistoricoCesta)
+- [x] 2.5 — API Endpoints (POST criar/atualizar, GET atual, GET histórico)
+- [x] 2.6 — Domain Events (CestaCriada, CestaAlterada com diff)
+- [ ] 2.7 — Painel admin básico (Livewire) — deferred to Sprint 7
+- [x] 2.8 — Tests (34 new: 8 Percentual, 8 Ticker, 9 Cesta entity, 9 API feature)
 
 ---
 
