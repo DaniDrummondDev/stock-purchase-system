@@ -26,6 +26,6 @@ class ComprasPanel extends Component
     public function render()
     {
         return view('livewire.admin.compras-panel')
-            ->layout('components.layouts.app', ['title' => 'Compras Programadas']);
+            ->layout('layouts.app');
     }
 }

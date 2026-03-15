@@ -24,6 +24,6 @@ class ContaMasterPanel extends Component
     public function render()
     {
         return view('livewire.admin.conta-master-panel')
-            ->layout('components.layouts.app', ['title' => 'Conta Master']);
+            ->layout('layouts.app');
     }
 }

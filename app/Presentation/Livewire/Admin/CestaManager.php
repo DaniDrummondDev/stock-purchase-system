@@ -103,6 +103,6 @@ class CestaManager extends Component
     public function render()
     {
         return view('livewire.admin.cesta-manager')
-            ->layout('components.layouts.app', ['title' => 'Gestão de Cesta']);
+            ->layout('layouts.app');
     }
 }
