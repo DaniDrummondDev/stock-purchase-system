@@ -2,6 +2,7 @@
 
 use App\Presentation\Http\Controllers\Api\CestaController;
 use App\Presentation\Http\Controllers\Api\ClienteController;
+use App\Presentation\Http\Controllers\Api\CompraController;
 use App\Presentation\Http\Controllers\Api\CotacaoController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,10 @@ Route::post('/admin/cotacoes/importar', [CotacaoController::class, 'importar']);
 Route::get('/cotacoes/{ticker}/{data}', [CotacaoController::class, 'showByDate'])
     ->where('data', '\d{4}-\d{2}-\d{2}');
 Route::get('/cotacoes/{ticker}', [CotacaoController::class, 'show']);
+
+// Motor de Compra (Admin)
+Route::prefix('admin/motor')->group(function () {
+    Route::post('/executar-compra', [CompraController::class, 'executar']);
+    Route::get('/compras', [CompraController::class, 'index']);
+    Route::get('/compras/{id}', [CompraController::class, 'show']);
+});
