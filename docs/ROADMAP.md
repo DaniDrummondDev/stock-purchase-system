@@ -49,16 +49,16 @@
 
 ---
 
-## [ ] Sprint 3 — Market Data / COTAHIST (Parser B3)
+## [x] Sprint 3 — Market Data / COTAHIST (Parser B3)
 **Objetivo:** Parser de arquivos COTAHIST B3 e cache de cotações
 
-- [ ] 3.1 — Parser fixed-width (245 chars/linha)
-- [ ] 3.2 — Filtro por tipo de registro (01), BDI (02/96), mercado (010/020)
-- [ ] 3.3 — Conversão de preços (inteiro com 2 decimais implícitos)
-- [ ] 3.4 — Cache em tabela `cotacoes`
-- [ ] 3.5 — Job assíncrono (fila `cotahist-parser`)
-- [ ] 3.6 — Domain Event: CotacoesImportadas — Novo, trigger para agents
-- [ ] 3.7 — Tests com arquivo COTAHIST de exemplo
+- [x] 3.1 — Parser fixed-width (245 chars/linha) — CotahistParserService (pure domain, no framework deps)
+- [x] 3.2 — Filtro por tipo de registro (01), BDI (02/96), mercado (010/020)
+- [x] 3.3 — Conversão de preços (inteiro com 2 decimais implícitos) — value / 100
+- [x] 3.4 — Cache em tabela `cotacoes` — upsert em chunks de 500
+- [x] 3.5 — Job assíncrono (fila `cotahist-parser`) — ImportarCotahistJob
+- [x] 3.6 — Domain Event: CotacoesImportadas
+- [x] 3.7 — Tests (19 new: 4 Cotacao entity, 10 Parser service, 5 API feature)
 
 ---
 

@@ -2,6 +2,7 @@
 
 use App\Presentation\Http\Controllers\Api\CestaController;
 use App\Presentation\Http\Controllers\Api\ClienteController;
+use App\Presentation\Http\Controllers\Api\CotacaoController;
 use Illuminate\Support\Facades\Route;
 
 // Clientes
@@ -16,3 +17,11 @@ Route::prefix('admin/cesta')->group(function () {
     Route::get('/atual', [CestaController::class, 'atual']);
     Route::get('/historico', [CestaController::class, 'historico']);
 });
+
+// Cotações (Admin - importação)
+Route::post('/admin/cotacoes/importar', [CotacaoController::class, 'importar']);
+
+// Cotações (public)
+Route::get('/cotacoes/{ticker}/{data}', [CotacaoController::class, 'showByDate'])
+    ->where('data', '\d{4}-\d{2}-\d{2}');
+Route::get('/cotacoes/{ticker}', [CotacaoController::class, 'show']);
