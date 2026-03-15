@@ -91,15 +91,15 @@
 
 ---
 
-## [ ] Sprint 6 — Rebalanceamento (RN-045 a RN-052)
+## [x] Sprint 6 — Rebalanceamento (RN-045 a RN-052)
 **Objetivo:** Implementar os dois tipos de rebalanceamento
 
-- [ ] 6.1 — Tipo A: mudança composição → vender removidos, comprar novos
-- [ ] 6.2 — Tipo B: desvio > 5% → rebalancear dentro da cesta
-- [ ] 6.3 — Trigger automático quando cesta alterada (Tipo A)
-- [ ] 6.4 — Análise periódica de desvio (Tipo B)
-- [ ] 6.5 — Cálculo de IR sobre vendas do rebalanceamento
-- [ ] 6.6 — Tests
+- [x] 6.1 — Tipo A: mudança composição → vender removidos, comprar novos — RebalanceamentoTipoAService
+- [x] 6.2 — Tipo B: desvio > 5pp → rebalancear dentro da cesta — RebalanceamentoTipoBService
+- [x] 6.3 — Trigger: CestaAlterada event emitido (listener futuro)
+- [x] 6.4 — Análise de desvio com limiar configurável
+- [x] 6.5 — Cálculo de IR sobre vendas do rebalanceamento — integra IRVendaService
+- [x] 6.6 — Tests (11 new: 3 TipoA, 5 TipoB, 3 API feature)
 
 ---
 

@@ -4,6 +4,7 @@ use App\Presentation\Http\Controllers\Api\CestaController;
 use App\Presentation\Http\Controllers\Api\ClienteController;
 use App\Presentation\Http\Controllers\Api\CompraController;
 use App\Presentation\Http\Controllers\Api\CotacaoController;
+use App\Presentation\Http\Controllers\Api\RebalanceamentoController;
 use Illuminate\Support\Facades\Route;
 
 // Clientes
@@ -33,3 +34,6 @@ Route::prefix('admin/motor')->group(function () {
     Route::get('/compras', [CompraController::class, 'index']);
     Route::get('/compras/{id}', [CompraController::class, 'show']);
 });
+
+// Rebalanceamento (Admin)
+Route::post('/admin/rebalanceamento/executar', [RebalanceamentoController::class, 'executar']);
