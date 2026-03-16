@@ -49,17 +49,17 @@
 ### Sprint 1.5b — RBAC
 - [x] 1.5b.1 — spatie/laravel-permission: 4 roles (admin, analyst, auditor, client)
 - [x] 1.5b.2 — 30+ granular permissions + RolesAndPermissionsSeeder (idempotent)
-- [ ] 1.5b.3 — Policies per BC — deferred to Sprint 1.5 phase 2
-- [ ] 1.5b.4 — TOTP 2FA — deferred to Sprint 1.5 phase 2
-- [ ] 1.5b.5 — JWT guard — deferred to Sprint 1.5 phase 2
+- [x] 1.5b.3 — Policies per BC (ClientePolicy, CestaPolicy, CompraPolicy)
+- [x] 1.5b.4 — TOTP 2FA (pragmarx/google2fa-laravel) — setup, confirm, verify, disable + Enforce2FA middleware
+- [x] 1.5b.5 — JWT guard (firebase/php-jwt) — RS256, JwtService + JwtGuard
 
 ### Sprint 1.5c — Threat Detection + Logging
 - [x] 1.5c.1 — Rate limiting por role (config/security.php + AppServiceProvider)
 - [x] 1.5c.2 — IP blacklist table + model
 - [x] 1.5c.3 — security_events table + SecurityEventLogger
-- [ ] 1.5c.4 — Anomaly detection — deferred to Sprint 1.5 phase 2
-- [ ] 1.5c.5 — Security alerts — deferred to Sprint 1.5 phase 2
-- [ ] 1.5c.6 — SecurityDashboard Livewire — deferred to Sprint 1.5 phase 2
+- [x] 1.5c.4 — Anomaly detection (AnomalyDetector: new IP, off-hours)
+- [x] 1.5c.5 — Security alerts (SecurityAlertNotification via mail + database)
+- [x] 1.5c.6 — SecurityDashboard Livewire (events, IPs, lockouts)
 - [x] 1.5c.7 — Tests (13 new: 2 headers, 4 password policy, 3 RBAC, 4 security events)
 
 ---

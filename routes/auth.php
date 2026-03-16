@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,4 +57,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // 2FA
+    Route::get('2fa/setup', [TwoFactorController::class, 'setup'])
+        ->name('2fa.setup');
+    Route::post('2fa/confirm', [TwoFactorController::class, 'confirm'])
+        ->name('2fa.confirm');
+    Route::get('2fa/verify', [TwoFactorController::class, 'verify'])
+        ->name('2fa.verify');
+    Route::post('2fa/verify', [TwoFactorController::class, 'verify']);
+    Route::post('2fa/disable', [TwoFactorController::class, 'disable'])
+        ->name('2fa.disable');
 });

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Presentation\Livewire\Admin\CestaManager;
 use App\Presentation\Livewire\Admin\ComprasPanel;
 use App\Presentation\Livewire\Admin\ContaMasterPanel;
+use App\Presentation\Livewire\Admin\SecurityDashboard;
 use App\Presentation\Livewire\Dashboard\ClienteDashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/cesta', CestaManager::class);
     Route::get('/admin/compras', ComprasPanel::class);
     Route::get('/admin/master', ContaMasterPanel::class);
+    Route::get('/admin/security', SecurityDashboard::class);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

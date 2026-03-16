@@ -47,6 +47,18 @@ return [
         'window' => 1,
     ],
 
+    // JWT
+    'jwt' => [
+        'ttl' => (int) env('JWT_TTL', 3600),
+        'refresh_ttl' => (int) env('JWT_REFRESH_TTL', 604800),
+    ],
+
+    // Anomaly Detection
+    'anomaly' => [
+        'off_hours_start' => 0,
+        'off_hours_end' => 6,
+    ],
+
     // Password Policy
     'password' => [
         'min_length' => 12,
