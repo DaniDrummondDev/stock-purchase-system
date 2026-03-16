@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\AI\DataProviders;
 
+use App\Domain\AI\Contracts\DataProviderInterface;
 use App\Domain\AI\Contracts\DataQuery;
 use App\Domain\AI\Contracts\DataResult;
 use App\Domain\AI\DataProviders\DataProviderRegistry;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Support\Facades\Log;
 
-final class DataProviderManager
+class DataProviderManager
 {
+    private const MAX_RETRIES = 3;
+
     public function __construct(
         private readonly DataProviderRegistry $registry,
         private readonly CacheRepository $cache,
@@ -72,20 +76,75 @@ final class DataProviderManager
         $lastException = null;
 
         foreach ($available as $provider) {
-            try {
-                $result = $provider->query($query);
+            if ($this->isRateLimited($provider)) {
+                Log::info("DataProviderManager: Provider {$provider->getName()} is rate limited, skipping.");
 
+                continue;
+            }
+
+            $result = $this->queryWithRetry($provider, $query);
+
+            if ($result !== null) {
                 if ($query->cacheTtlSeconds !== null) {
                     $this->cache->put($cacheKey, $result, $query->cacheTtlSeconds);
                 }
 
                 return $result;
-            } catch (\Throwable $e) {
-                $lastException = $e;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Query a provider with exponential backoff retry.
+     */
+    private function queryWithRetry(DataProviderInterface $provider, DataQuery $query): ?DataResult
+    {
+        for ($attempt = 1; $attempt <= self::MAX_RETRIES; $attempt++) {
+            try {
+                $result = $provider->query($query);
+                $this->recordProviderSuccess($provider);
+
+                return $result;
+            } catch (\Throwable $e) {
+                Log::warning("DataProviderManager: {$provider->getName()} attempt {$attempt}/".self::MAX_RETRIES." failed: {$e->getMessage()}");
+
+                if ($attempt < self::MAX_RETRIES) {
+                    usleep((int) (pow(2, $attempt - 1) * 500_000)); // 0.5s, 1s, 2s
+                }
+            }
+        }
+
+        $this->recordProviderFailure($provider);
+
+        return null;
+    }
+
+    /**
+     * Check if a provider is rate limited (sliding window in Redis).
+     */
+    private function isRateLimited(DataProviderInterface $provider): bool
+    {
+        $key = "dp_ratelimit:{$provider->getName()}";
+        $count = (int) $this->cache->get($key, 0);
+        $limit = (int) config("ai.data_providers.rate_limits.{$provider->getName()}", 60);
+
+        return $count >= $limit;
+    }
+
+    private function recordProviderSuccess(DataProviderInterface $provider): void
+    {
+        $key = "dp_ratelimit:{$provider->getName()}";
+        $count = (int) $this->cache->get($key, 0);
+        $this->cache->put($key, $count + 1, 3600); // 1 hour window
+    }
+
+    private function recordProviderFailure(DataProviderInterface $provider): void
+    {
+        $failKey = "dp_failures:{$provider->getName()}";
+        $failures = (int) $this->cache->get($failKey, 0);
+        $this->cache->put($failKey, $failures + 1, 600); // 10 min window
     }
 
     private function buildCacheKey(DataQuery $query): string

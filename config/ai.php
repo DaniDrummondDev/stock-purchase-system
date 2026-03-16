@@ -157,4 +157,11 @@ return [
         ],
     ],
 
+    'data_providers' => [
+        'rate_limits' => [
+            'cotahist' => 120,  // requests per hour (internal, generous)
+            'bcb' => 60,        // requests per hour (external API)
+        ],
+    ],
+
 ];

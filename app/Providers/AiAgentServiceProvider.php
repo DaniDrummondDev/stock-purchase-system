@@ -8,12 +8,17 @@ use App\Domain\AI\Contracts\EmbeddingServiceInterface;
 use App\Domain\AI\Contracts\RecommendationServiceInterface;
 use App\Domain\AI\DataProviders\DataProviderRegistry;
 use App\Domain\AI\Orchestrator\OrchestratorPromptBuilder;
+use App\Domain\AI\RiskAnalysis\Services\RiskAnalysisService;
 use App\Domain\Basket\Repositories\CestaRepositoryInterface;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
 use App\Domain\MarketData\Events\CotacoesImportadas;
 use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
+use App\Infrastructure\AI\Agents\MarketIntelligenceAgent;
 use App\Infrastructure\AI\Agents\PortfolioAnalystAgent;
+use App\Infrastructure\AI\Agents\RiskAnalystAgent;
+use App\Infrastructure\AI\Agents\TaxAnalystAgent;
 use App\Infrastructure\AI\AiConfigResolver;
+use App\Infrastructure\AI\DataProviders\BcbProvider;
 use App\Infrastructure\AI\DataProviders\CotahistProvider;
 use App\Infrastructure\AI\DataProviders\DataProviderManager;
 use App\Infrastructure\AI\Orchestrator\AgentOrchestrator;
@@ -22,6 +27,7 @@ use App\Infrastructure\AI\Safety\AgentTimeoutConfig;
 use App\Infrastructure\AI\Safety\SafeAgentExecutor;
 use App\Infrastructure\AI\Services\EmbeddingService;
 use App\Infrastructure\AI\Services\RecommendationService;
+use App\Infrastructure\Kafka\KafkaProducer;
 use App\Infrastructure\Listeners\UpdateEmbeddingsOnCotacoesImported;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\Event;
@@ -35,6 +41,7 @@ class AiAgentServiceProvider extends ServiceProvider
             $registry = new DataProviderRegistry;
 
             $registry->register($this->app->make(CotahistProvider::class));
+            $registry->register($this->app->make(BcbProvider::class));
 
             return $registry;
         });
@@ -100,6 +107,36 @@ class AiAgentServiceProvider extends ServiceProvider
                 custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
                 cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
                 recommendationService: $app->make(RecommendationServiceInterface::class),
+            );
+        });
+
+        // Sprint 9a — RiskAnalysisService
+        $this->app->singleton(RiskAnalysisService::class);
+
+        // Sprint 9a — RiskAnalystAgent
+        $this->app->singleton(RiskAnalystAgent::class, function ($app) {
+            return new RiskAnalystAgent(
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+                riskService: $app->make(RiskAnalysisService::class),
+                kafkaProducer: $app->make(KafkaProducer::class),
+            );
+        });
+
+        // Sprint 9a — TaxAnalystAgent
+        $this->app->singleton(TaxAnalystAgent::class, function ($app) {
+            return new TaxAnalystAgent(
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+            );
+        });
+
+        // Sprint 9a — MarketIntelligenceAgent
+        $this->app->singleton(MarketIntelligenceAgent::class, function ($app) {
+            return new MarketIntelligenceAgent(
+                dataProviderManager: $app->make(DataProviderManager::class),
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                configResolver: $app->make(AiConfigResolver::class),
             );
         });
     }

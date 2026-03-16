@@ -156,31 +156,33 @@
 - [x] 8a.7 — Safety controls: AgentCircuitBreaker (Redis, 3 failures/10min), AgentTimeoutConfig, SafeAgentExecutor
 - [x] 8a.8 — Tests (20 new: 3 AgentContext, 6 AgentResult, 6 DataProviderRegistry, 5 CircuitBreaker)
 
-## [ ] Sprint 8b — Recommendation + Portfolio Agent
+## [x] Sprint 8b — Recommendation + Portfolio Agent
 **Objetivo:** Recomendação inteligente de cesta + análise de carteira
 
-- [ ] 8b.1 — EmbeddingService (gera embeddings via laravel/ai)
-- [ ] 8b.2 — RecommendationService + pgvector similarity search
-- [ ] 8b.3 — PortfolioAnalystAgent (wraps recommendation logic)
-- [ ] 8b.4 — Endpoint: POST /api/ai/recomendacao-cesta
-- [ ] 8b.5 — Endpoint: POST /api/ai/chat (basic)
-- [ ] 8b.6 — Interface admin Livewire (sugestão IA vs cesta atual)
-- [ ] 8b.7 — Job scheduled: atualizar embeddings com novas cotações
-- [ ] 8b.8 — Tests
+- [x] 8b.1 — EmbeddingService (laravel/ai + Voyage AI default, batch in chunks of 20)
+- [x] 8b.2 — RecommendationService + pgvector cosine similarity search + LLM rationale
+- [x] 8b.3 — PortfolioAnalystAgent (3 actions: analyze_composition, estimate_pl, recommend_basket)
+- [x] 8b.4 — Endpoint: POST /api/ai/recomendacao-cesta
+- [x] 8b.5 — Endpoint: POST /api/ai/chat (ChatContexto with 50 msg limit)
+- [x] 8b.6 — AiCestaRecommendation Livewire (side-by-side current vs AI suggestion, confidence bar, apply button)
+- [x] 8b.7 — UpdateAtivoEmbeddingsJob (daily 19h + CotacoesImportadas event listener)
+- [x] 8b.8 — Tests (22 new: 3 TickerEmbedding, 4 RecommendationResult, 6 PortfolioAnalyst, 2 Embedding, 4 API, 3 PortfolioAnalysis)
+- [x] 8b.9 — Migration: unique + HNSW index on ativo_embeddings + Livewire config fix
 
 ---
 
-## [ ] Sprint 9a — Risk + Tax + Market Agents
+## [x] Sprint 9a — Risk + Tax + Market Agents
 **Objetivo:** Análise de risco, IR e inteligência de mercado
 
-- [ ] 9a.1 — RiskAnalysisService + RiskAnalystAgent — Score 0.0-1.0, faixas, alertas
-- [ ] 9a.2 — Cache em analise_risco_cache (TTL 24h)
-- [ ] 9a.3 — Publicação alertas-risco Kafka (score > 0.7)
-- [ ] 9a.4 — TaxAnalystAgent — Consumes operacoes_ir + Kafka events
-- [ ] 9a.5 — BcbProvider (Selic, IPCA, câmbio) — API pública BCB, cache 6h
-- [ ] 9a.6 — MarketIntelligenceAgent
-- [ ] 9a.7 — Rate limiting + resilience for external providers
-- [ ] 9a.8 — Tests
+- [x] 9a.1 — RiskAnalysisService (Herfindahl, volatility, concentration) + RiskAnalystAgent (calculate_risk, get_cached_risk)
+- [x] 9a.2 — AnaliseRiscoCache Eloquent model (TTL 24h, scopes: forCliente, active, expired)
+- [x] 9a.3 — RiscoAlertaMessage + Kafka publish on alertas-risco when score >= 0.7
+- [x] 9a.4 — TaxAnalystAgent (analyze_tax_status, simulate_sale_tax) — R$20k threshold, dedo-duro acumulado
+- [x] 9a.5 — BcbProvider (Selic 432, IPCA 433, USD/BRL 1) — BCB SGS API, exponential backoff retry
+- [x] 9a.6 — MarketIntelligenceAgent (get_market_context) — CotahistProvider + BcbProvider + LLM contextual insights
+- [x] 9a.7 — DataProviderManager: rate limiting (Redis sliding window), retry with exponential backoff, provider failure tracking
+- [x] 9a.8 — Tests (32 new: 7 RiskBand, 7 RiskScore, 4 RiskAnalysisService, 4 RiskAnalystAgent, 4 TaxAnalyst, 3 MarketIntel, 3 BcbProvider)
+- [x] 9a.9 — Domain VOs: RiskScore, RiskBand (enum), PortfolioRiskMetrics, MacroIndicators
 
 ## [ ] Sprint 9b — Assistant + Simulator + Educator
 **Objetivo:** Assistente virtual completo com simulação e educação
