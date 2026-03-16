@@ -115,23 +115,50 @@ O seeder é idempotente — pode ser executado múltiplas vezes sem duplicar dad
 | `PUT` | `/api/clientes/{clienteId}/valor-mensal` | Alterar valor mensal de investimento |
 | `GET` | `/api/clientes/{clienteId}/carteira` | Consultar carteira do cliente |
 
-### Exemplos
+### Cesta Top Five (Admin)
 
-**Adesão:**
-```bash
-curl -X POST http://localhost:8000/api/clientes/adesao \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nome": "João Silva",
-    "cpf": "12345678909",
-    "email": "joao@email.com",
-    "valorMensal": 1000.00
-  }'
-```
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/admin/cesta/` | Criar/atualizar cesta |
+| `GET` | `/api/admin/cesta/atual` | Consultar cesta ativa |
+| `GET` | `/api/admin/cesta/historico` | Histórico de cestas |
 
-**Consultar carteira:**
+### Cotações
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/admin/cotacoes/importar` | Importar arquivo COTAHIST |
+| `GET` | `/api/cotacoes/{ticker}/{data}` | Cotação por ticker e data |
+| `GET` | `/api/cotacoes/{ticker}` | Última cotação do ticker |
+
+### Motor de Compra (Admin)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/admin/motor/executar-compra` | Executar compra programada |
+| `GET` | `/api/admin/motor/compras` | Listar compras |
+| `GET` | `/api/admin/motor/compras/{id}` | Detalhe de uma compra |
+
+### Rebalanceamento (Admin)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/admin/rebalanceamento/executar` | Executar rebalanceamento |
+
+### AI
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/ai/recomendacao-cesta` | Recomendação IA para cesta |
+| `POST` | `/api/ai/chat` | Chat com assistente financeiro |
+
+### Swagger/OpenAPI
+
+Documentação interactiva disponível em: `http://localhost:8000/api/documentation`
+
 ```bash
-curl http://localhost:8000/api/clientes/{clienteId}/carteira
+# Gerar documentação Swagger
+docker compose exec app php artisan l5-swagger:generate
 ```
 
 ## Testes
@@ -163,6 +190,8 @@ docker compose exec app vendor/bin/pint --test
 | [Security](docs/superpowers/specs/2026-03-15-security-design.md) | OWASP Top 10 2025, auth, RBAC, rate limiting |
 | [Regras de Negócio](docs/teste_itau_v2-main/regras-negocio-detalhadas.md) | RN-001 a RN-070 (desafio original) |
 | [API Contracts](docs/teste_itau_v2-main/exemplos-contratos-api.md) | Contratos e error codes |
+| [ADRs](docs/adr/) | Architecture Decision Records (6 decisões) |
+| Swagger UI | `http://localhost:8000/api/documentation` |
 
 ## Licença
 

@@ -214,15 +214,15 @@
 
 ---
 
-## [ ] Sprint 11 — Finalização
+## [x] Sprint 11 — Finalização
 **Objetivo:** Qualidade, documentação e entrega
 
-- [ ] 11.1 — Coverage de testes >= 70% (ajustar gaps)
-- [ ] 11.2 — Documentação de arquitetura (ADRs)
-- [ ] 11.3 — Swagger/OpenAPI completo e validado
-- [ ] 11.4 — Observabilidade (logs estruturados, métricas)
-- [ ] 11.5 — README completo com instruções de setup
-- [ ] 11.6 — Vídeo demonstração (funcionalidade + arquitetura + decisões)
+- [x] 11.1 — CI coverage enforced (removed continue-on-error on --min=70)
+- [x] 11.2 — 6 ADRs: DDD Architecture, CQRS/ES, AI Multi-Provider, Agent Orchestrator, OWASP 2025, pgvector
+- [x] 11.3 — Swagger/OpenAPI generated and validated (l5-swagger:generate)
+- [x] 11.4 — Observability: JsonFormatter (structured JSON logs), RequestIdMiddleware (X-Request-Id correlation), agent_activity log channel
+- [x] 11.5 — README complete: all 18 API routes documented, Swagger UI link, ADRs link
+- [ ] 11.6 — Vídeo demonstração (pendente — deliverable do utilizador)
 
 ---
 

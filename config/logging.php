@@ -1,5 +1,6 @@
 <?php
 
+use App\Infrastructure\Logging\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -125,6 +126,22 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'json' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/json/laravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'formatter' => JsonFormatter::class,
+        ],
+
+        'agent_activity' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/agents/activity.log'),
+            'level' => 'info',
+            'days' => 30,
+            'formatter' => JsonFormatter::class,
         ],
 
     ],
