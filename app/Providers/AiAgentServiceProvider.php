@@ -10,9 +10,14 @@ use App\Domain\AI\DataProviders\DataProviderRegistry;
 use App\Domain\AI\Orchestrator\OrchestratorPromptBuilder;
 use App\Domain\AI\RiskAnalysis\Services\RiskAnalysisService;
 use App\Domain\Basket\Repositories\CestaRepositoryInterface;
+use App\Domain\Client\Events\ClienteAderiu;
+use App\Domain\Client\Events\ValorMensalAlterado;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
 use App\Domain\MarketData\Events\CotacoesImportadas;
 use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
+use App\Domain\PurchaseEngine\Events\CompraDistribuida;
+use App\Domain\Rebalancing\Events\RebalanceamentoTipoA;
+use App\Domain\Rebalancing\Events\RebalanceamentoTipoB;
 use App\Infrastructure\AI\Agents\EducatorAgent;
 use App\Infrastructure\AI\Agents\MarketIntelligenceAgent;
 use App\Infrastructure\AI\Agents\PortfolioAnalystAgent;
@@ -23,6 +28,9 @@ use App\Infrastructure\AI\AiConfigResolver;
 use App\Infrastructure\AI\DataProviders\BcbProvider;
 use App\Infrastructure\AI\DataProviders\CotahistProvider;
 use App\Infrastructure\AI\DataProviders\DataProviderManager;
+use App\Infrastructure\AI\Notifications\AgentNotificationDispatcher;
+use App\Infrastructure\AI\Notifications\NotificationPrioritizer;
+use App\Infrastructure\AI\Notifications\ProactiveChatInjector;
 use App\Infrastructure\AI\Orchestrator\AgentOrchestrator;
 use App\Infrastructure\AI\Safety\AgentCircuitBreaker;
 use App\Infrastructure\AI\Safety\AgentTimeoutConfig;
@@ -31,6 +39,10 @@ use App\Infrastructure\AI\Safety\ScopeGuardrail;
 use App\Infrastructure\AI\Services\EmbeddingService;
 use App\Infrastructure\AI\Services\RecommendationService;
 use App\Infrastructure\Kafka\KafkaProducer;
+use App\Infrastructure\Listeners\TriggerAgentsOnCompraDistribuida;
+use App\Infrastructure\Listeners\TriggerAgentsOnRebalanceamento;
+use App\Infrastructure\Listeners\TriggerEducatorOnClienteAderiu;
+use App\Infrastructure\Listeners\TriggerSimulatorOnValorMensalAlterado;
 use App\Infrastructure\Listeners\UpdateEmbeddingsOnCotacoesImported;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\Event;
@@ -164,6 +176,21 @@ class AiAgentServiceProvider extends ServiceProvider
 
         // Sprint 9b — ScopeGuardrail
         $this->app->singleton(ScopeGuardrail::class);
+
+        // Sprint 10 — Notification services
+        $this->app->singleton(NotificationPrioritizer::class);
+
+        $this->app->singleton(AgentNotificationDispatcher::class, function ($app) {
+            return new AgentNotificationDispatcher(
+                prioritizer: $app->make(NotificationPrioritizer::class),
+            );
+        });
+
+        $this->app->singleton(ProactiveChatInjector::class, function ($app) {
+            return new ProactiveChatInjector(
+                cache: $app->make(Cache::class),
+            );
+        });
     }
 
     public function boot(): void
@@ -172,6 +199,32 @@ class AiAgentServiceProvider extends ServiceProvider
         Event::listen(
             CotacoesImportadas::class,
             UpdateEmbeddingsOnCotacoesImported::class,
+        );
+
+        // Sprint 10 — Event-driven agent triggers
+        Event::listen(
+            CompraDistribuida::class,
+            TriggerAgentsOnCompraDistribuida::class,
+        );
+
+        Event::listen(
+            RebalanceamentoTipoA::class,
+            TriggerAgentsOnRebalanceamento::class,
+        );
+
+        Event::listen(
+            RebalanceamentoTipoB::class,
+            TriggerAgentsOnRebalanceamento::class,
+        );
+
+        Event::listen(
+            ClienteAderiu::class,
+            TriggerEducatorOnClienteAderiu::class,
+        );
+
+        Event::listen(
+            ValorMensalAlterado::class,
+            TriggerSimulatorOnValorMensalAlterado::class,
         );
     }
 }

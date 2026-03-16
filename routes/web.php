@@ -7,6 +7,8 @@ use App\Presentation\Livewire\Admin\ContaMasterPanel;
 use App\Presentation\Livewire\Admin\SecurityDashboard;
 use App\Presentation\Livewire\Chat\ChatWindow;
 use App\Presentation\Livewire\Dashboard\ClienteDashboard;
+use App\Presentation\Livewire\Notifications\AlertPreferences;
+use App\Presentation\Livewire\Notifications\NotificationFeed;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/master', ContaMasterPanel::class);
     Route::get('/admin/security', SecurityDashboard::class);
     Route::get('/chat', ChatWindow::class)->name('chat');
+    Route::get('/notifications', NotificationFeed::class)->name('notifications');
+    Route::get('/notifications/preferences', AlertPreferences::class)->name('notifications.preferences');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

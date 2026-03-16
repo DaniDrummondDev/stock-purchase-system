@@ -197,20 +197,20 @@
 
 ---
 
-## [ ] Sprint 10 — Notifications + Triggers
+## [x] Sprint 10 — Notifications + Triggers
 **Objetivo:** Sistema de notificações e triggers automáticos
 
-- [ ] 10.1 — alert_preferences migration + CRUD API
-- [ ] 10.2 — NotificationPrioritizer (critical/normal/low)
-- [ ] 10.3 — AgentNotificationDispatcher
-- [ ] 10.4 — In-App notifications (Laravel Notifications)
-- [ ] 10.5 — Email notifications (critical alerts)
-- [ ] 10.6 — ProactiveChatInjector (opt-in, max 3/day)
-- [ ] 10.7 — Scheduled jobs: DailyRiskScan, MarketBriefing, WeeklyReport, RebalancingCheck, TaxAlert
-- [ ] 10.8 — Event-driven triggers (CompraDistribuida, CotacoesImportadas, etc.)
-- [ ] 10.9 — AlertPreferences Livewire component
-- [ ] 10.10 — NotificationBell + NotificationFeed Livewire
-- [ ] 10.11 — Tests
+- [x] 10.1 — alert_preferences migration + AlertPreference model (10 trigger types, channels jsonb, threshold_config)
+- [x] 10.2 — NotificationPrioritizer (Critical/Normal/Low enum, score/PL/trigger classification)
+- [x] 10.3 — AgentNotificationDispatcher (preference check, channel resolution, Laravel Notification dispatch)
+- [x] 10.4 — In-App notifications (AgentResultNotification via database channel)
+- [x] 10.5 — Email notifications (AgentResultNotification via mail channel for critical alerts)
+- [x] 10.6 — ProactiveChatInjector (opt-in via AlertPreference, max 3/day Redis counter, system messages)
+- [x] 10.7 — 5 scheduled jobs: DailyRiskScan(20h), MarketBriefing(9h), WeeklyReport(Fri 18h), RebalancingCheck(20:30), TaxAlert(monthly 1st)
+- [x] 10.8 — 4 event-driven listeners: CompraDistribuida, Rebalanceamento A/B, ClienteAderiu, ValorMensalAlterado
+- [x] 10.9 — AlertPreferences Livewire (toggle triggers, channel selection per trigger type)
+- [x] 10.10 — NotificationBell (badge + dropdown) + NotificationFeed (filter by priority, mark as read)
+- [x] 10.11 — Tests (9 new: 4 Prioritizer, 1 Dispatcher, 1 ChatInjector, 1 Job, 1 Preferences, 1 Feed)
 
 ---
 
