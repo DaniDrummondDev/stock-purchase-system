@@ -126,4 +126,35 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Agent System Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the financial agent orchestration system (Maestro).
+    | Controls timeouts, parallelism, circuit breakers, and token budgets.
+    |
+    */
+
+    'agents' => [
+        'default_timeout' => (int) env('AI_AGENT_TIMEOUT', 30),
+        'max_parallel' => (int) env('AI_AGENT_MAX_PARALLEL', 4),
+
+        'circuit_breaker' => [
+            'failure_threshold' => 3,
+            'cooldown_seconds' => 600,
+        ],
+
+        'token_budget' => [
+            'planning' => 4000,
+            'consolidation' => 8000,
+        ],
+
+        'cache' => [
+            'risk_ttl' => 86400,       // 24h for risk analysis
+            'quotation_ttl' => 3600,   // 1h for quotations
+            'macro_ttl' => 21600,      // 6h for macro indicators
+        ],
+    ],
+
 ];
