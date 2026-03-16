@@ -9,6 +9,7 @@
         "php": "^8.2",
         "bacon/bacon-qr-code": "^3.0",
         "darkaonline/l5-swagger": "^10.1",
+        "doctrine/dbal": "^4.4",
         "firebase/php-jwt": "^7.0",
         "laravel/ai": "^0.3.0",
         "laravel/framework": "^12.0",

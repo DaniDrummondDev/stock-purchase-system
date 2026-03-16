@@ -43,7 +43,7 @@
 - [x] 1.5a.2 — Security Headers middleware (X-Frame-Options, X-Content-Type, Referrer-Policy, Permissions-Policy, CSP in prod)
 - [x] 1.5a.3 — CORS restritivo (config/cors.php, origins from env)
 - [x] 1.5a.4 — Session hardening (encrypt=true, expire_on_close=true)
-- [ ] 1.5a.5 — Users table UUID migration + cliente_id FK — deferred to Sprint 1.5 phase 2
+- [x] 1.5a.5 — Users table UUID migration + cliente_id FK + HasUuids trait
 - [x] 1.5a.6 — Existing routes protected with auth middleware (Sprint 7)
 
 ### Sprint 1.5b — RBAC
