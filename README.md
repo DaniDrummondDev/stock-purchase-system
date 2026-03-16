@@ -1,4 +1,4 @@
-# Stock Purchase System (Compra Programada de Ações)
+# Compra Programada de Ações Itaú
 
 [![CI](https://github.com/DaniDrummondDev/stock-purchase-system/actions/workflows/ci.yml/badge.svg)](https://github.com/DaniDrummondDev/stock-purchase-system/actions/workflows/ci.yml)
 

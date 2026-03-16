@@ -1,6 +1,6 @@
 # Roadmap — Stock Purchase System (Compra Programada de Ações)
 
-> Last updated: 2026-03-15
+> Last updated: 2026-03-16
 
 ---
 
@@ -144,17 +144,17 @@
 
 ---
 
-## [ ] Sprint 8a — AI Foundation + Agent Infrastructure
+## [x] Sprint 8a — AI Foundation + Agent Infrastructure
 **Objetivo:** Base do sistema de agentes financeiros
 
-- [ ] 8a.1 — Contracts: FinanceAgentInterface, AgentContext, AgentResult
-- [ ] 8a.2 — Contracts: DataProviderInterface, DataQuery, DataResult
-- [ ] 8a.3 — AgentOrchestrator (Maestro) + ExecutionPlan + PromptBuilder — LLM tool calling via laravel/ai
-- [ ] 8a.4 — DataProviderRegistry + DataProviderManager
-- [ ] 8a.5 — CotahistProvider (wraps cotacoes table)
-- [ ] 8a.6 — Migrations: agent_executions, data_provider_configs
-- [ ] 8a.7 — Safety controls: timeout, circuit breaker, token budget
-- [ ] 8a.8 — Tests
+- [x] 8a.1 — Contracts: FinanceAgentInterface, AgentContext, AgentResult, TriggerType
+- [x] 8a.2 — Contracts: DataProviderInterface, DataQuery, DataResult
+- [x] 8a.3 — AgentOrchestrator (Maestro) + ExecutionPlan + PromptBuilder + FinanceAgentTool adapter — LLM tool calling via laravel/ai
+- [x] 8a.4 — DataProviderRegistry + DataProviderManager (Redis cache, fallback)
+- [x] 8a.5 — CotahistProvider (wraps cotacoes table — quotation, historical_prices, volume)
+- [x] 8a.6 — Migrations: agent_executions, data_provider_configs + Eloquent models
+- [x] 8a.7 — Safety controls: AgentCircuitBreaker (Redis, 3 failures/10min), AgentTimeoutConfig, SafeAgentExecutor
+- [x] 8a.8 — Tests (20 new: 3 AgentContext, 6 AgentResult, 6 DataProviderRegistry, 5 CircuitBreaker)
 
 ## [ ] Sprint 8b — Recommendation + Portfolio Agent
 **Objetivo:** Recomendação inteligente de cesta + análise de carteira
