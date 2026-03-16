@@ -35,6 +35,35 @@
 
 ---
 
+## [x] Sprint 1.5 — Security (OWASP Top 10 2025)
+**Objetivo:** Segurança abrangente baseada no OWASP Top 10 2025
+
+### Sprint 1.5a — Auth Foundation
+- [x] 1.5a.1 — Argon2id config + password policy (12 chars, mixed case, numbers, symbols)
+- [x] 1.5a.2 — Security Headers middleware (X-Frame-Options, X-Content-Type, Referrer-Policy, Permissions-Policy, CSP in prod)
+- [x] 1.5a.3 — CORS restritivo (config/cors.php, origins from env)
+- [x] 1.5a.4 — Session hardening (encrypt=true, expire_on_close=true)
+- [ ] 1.5a.5 — Users table UUID migration + cliente_id FK — deferred to Sprint 1.5 phase 2
+- [x] 1.5a.6 — Existing routes protected with auth middleware (Sprint 7)
+
+### Sprint 1.5b — RBAC
+- [x] 1.5b.1 — spatie/laravel-permission: 4 roles (admin, analyst, auditor, client)
+- [x] 1.5b.2 — 30+ granular permissions + RolesAndPermissionsSeeder (idempotent)
+- [ ] 1.5b.3 — Policies per BC — deferred to Sprint 1.5 phase 2
+- [ ] 1.5b.4 — TOTP 2FA — deferred to Sprint 1.5 phase 2
+- [ ] 1.5b.5 — JWT guard — deferred to Sprint 1.5 phase 2
+
+### Sprint 1.5c — Threat Detection + Logging
+- [x] 1.5c.1 — Rate limiting por role (config/security.php + AppServiceProvider)
+- [x] 1.5c.2 — IP blacklist table + model
+- [x] 1.5c.3 — security_events table + SecurityEventLogger
+- [ ] 1.5c.4 — Anomaly detection — deferred to Sprint 1.5 phase 2
+- [ ] 1.5c.5 — Security alerts — deferred to Sprint 1.5 phase 2
+- [ ] 1.5c.6 — SecurityDashboard Livewire — deferred to Sprint 1.5 phase 2
+- [x] 1.5c.7 — Tests (13 new: 2 headers, 4 password policy, 3 RBAC, 4 security events)
+
+---
+
 ## [x] Sprint 2 — Cesta Top Five (RN-014 a RN-019)
 **Objetivo:** Gestão da cesta de ações recomendada
 

@@ -10,8 +10,8 @@ test('new users can register', function () {
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Sps@2026#Secure',
+        'password_confirmation' => 'Sps@2026#Secure',
     ]);
 
     $this->assertAuthenticated();

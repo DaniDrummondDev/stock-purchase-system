@@ -7,33 +7,38 @@ use App\Presentation\Http\Controllers\Api\CotacaoController;
 use App\Presentation\Http\Controllers\Api\RebalanceamentoController;
 use Illuminate\Support\Facades\Route;
 
-// Clientes
-Route::post('/clientes/adesao', [ClienteController::class, 'adesao']);
-Route::post('/clientes/{clienteId}/saida', [ClienteController::class, 'saida']);
-Route::put('/clientes/{clienteId}/valor-mensal', [ClienteController::class, 'alterarValorMensal']);
-Route::get('/clientes/{clienteId}/carteira', [ClienteController::class, 'carteira']);
+// Apply rate limiting to all API routes
+Route::middleware('throttle:api')->group(function () {
 
-// Cesta Top Five (Admin)
-Route::prefix('admin/cesta')->group(function () {
-    Route::post('/', [CestaController::class, 'store']);
-    Route::get('/atual', [CestaController::class, 'atual']);
-    Route::get('/historico', [CestaController::class, 'historico']);
-});
+    // Clientes
+    Route::post('/clientes/adesao', [ClienteController::class, 'adesao']);
+    Route::post('/clientes/{clienteId}/saida', [ClienteController::class, 'saida']);
+    Route::put('/clientes/{clienteId}/valor-mensal', [ClienteController::class, 'alterarValorMensal']);
+    Route::get('/clientes/{clienteId}/carteira', [ClienteController::class, 'carteira']);
 
-// Cotações (Admin - importação)
-Route::post('/admin/cotacoes/importar', [CotacaoController::class, 'importar']);
+    // Cesta Top Five (Admin)
+    Route::prefix('admin/cesta')->group(function () {
+        Route::post('/', [CestaController::class, 'store']);
+        Route::get('/atual', [CestaController::class, 'atual']);
+        Route::get('/historico', [CestaController::class, 'historico']);
+    });
 
-// Cotações (public)
-Route::get('/cotacoes/{ticker}/{data}', [CotacaoController::class, 'showByDate'])
-    ->where('data', '\d{4}-\d{2}-\d{2}');
-Route::get('/cotacoes/{ticker}', [CotacaoController::class, 'show']);
+    // Cotações (Admin - importação)
+    Route::post('/admin/cotacoes/importar', [CotacaoController::class, 'importar']);
 
-// Motor de Compra (Admin)
-Route::prefix('admin/motor')->group(function () {
-    Route::post('/executar-compra', [CompraController::class, 'executar']);
-    Route::get('/compras', [CompraController::class, 'index']);
-    Route::get('/compras/{id}', [CompraController::class, 'show']);
-});
+    // Cotações (public)
+    Route::get('/cotacoes/{ticker}/{data}', [CotacaoController::class, 'showByDate'])
+        ->where('data', '\d{4}-\d{2}-\d{2}');
+    Route::get('/cotacoes/{ticker}', [CotacaoController::class, 'show']);
 
-// Rebalanceamento (Admin)
-Route::post('/admin/rebalanceamento/executar', [RebalanceamentoController::class, 'executar']);
+    // Motor de Compra (Admin)
+    Route::prefix('admin/motor')->group(function () {
+        Route::post('/executar-compra', [CompraController::class, 'executar']);
+        Route::get('/compras', [CompraController::class, 'index']);
+        Route::get('/compras/{id}', [CompraController::class, 'show']);
+    });
+
+    // Rebalanceamento (Admin)
+    Route::post('/admin/rebalanceamento/executar', [RebalanceamentoController::class, 'executar']);
+
+}); // end throttle:api group

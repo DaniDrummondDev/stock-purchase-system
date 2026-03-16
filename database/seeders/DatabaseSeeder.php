@@ -10,46 +10,21 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+        $this->call(RolesAndPermissionsSeeder::class);
+
         $users = [
-            [
-                'name' => 'Admin SPS',
-                'email' => 'admin@sps.local',
-                'role' => 'admin',
-            ],
-            [
-                'name' => 'Ana Analyst',
-                'email' => 'analyst@sps.local',
-                'role' => 'analyst',
-            ],
-            [
-                'name' => 'Auditor SPS',
-                'email' => 'auditor@sps.local',
-                'role' => 'auditor',
-            ],
-            [
-                'name' => 'João Silva',
-                'email' => 'joao@sps.local',
-                'role' => 'client',
-            ],
-            [
-                'name' => 'Maria Santos',
-                'email' => 'maria@sps.local',
-                'role' => 'client',
-            ],
-            [
-                'name' => 'Carlos Oliveira',
-                'email' => 'carlos@sps.local',
-                'role' => 'client',
-            ],
+            ['name' => 'Admin SPS', 'email' => 'admin@sps.local', 'role' => 'admin'],
+            ['name' => 'Ana Analyst', 'email' => 'analyst@sps.local', 'role' => 'analyst'],
+            ['name' => 'Auditor SPS', 'email' => 'auditor@sps.local', 'role' => 'auditor'],
+            ['name' => 'João Silva', 'email' => 'joao@sps.local', 'role' => 'client'],
+            ['name' => 'Maria Santos', 'email' => 'maria@sps.local', 'role' => 'client'],
+            ['name' => 'Carlos Oliveira', 'email' => 'carlos@sps.local', 'role' => 'client'],
         ];
 
         foreach ($users as $userData) {
-            User::updateOrCreate(
+            $user = User::updateOrCreate(
                 ['email' => $userData['email']],
                 [
                     ...$userData,
@@ -57,6 +32,10 @@ class DatabaseSeeder extends Seeder
                     'email_verified_at' => now(),
                 ],
             );
+
+            if (! $user->hasRole($userData['role'])) {
+                $user->assignRole($userData['role']);
+            }
         }
     }
 }
