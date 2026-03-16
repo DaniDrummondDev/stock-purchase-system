@@ -6,6 +6,8 @@ use App\Infrastructure\Persistence\Models\Custodia;
 use App\Presentation\Livewire\Dashboard\ClienteDashboard;
 use Livewire\Livewire;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 test('dashboard renders with client data', function () {
     $cliente = Cliente::create([
         'nome' => 'João Silva',
@@ -36,7 +38,6 @@ test('dashboard renders with client data', function () {
     ]);
 
     Livewire::test(ClienteDashboard::class)
-        ->assertSee('Dashboard do Cliente')
         ->assertSee('João Silva')
         ->assertSee('PETR4');
 });

@@ -15,13 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Authenticated Livewire pages
+// Authenticated pages (all users)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', ClienteDashboard::class)->name('dashboard');
-    Route::get('/admin/cesta', CestaManager::class);
-    Route::get('/admin/compras', ComprasPanel::class);
-    Route::get('/admin/master', ContaMasterPanel::class);
-    Route::get('/admin/security', SecurityDashboard::class);
     Route::get('/chat', ChatWindow::class)->name('chat');
     Route::get('/notifications', NotificationFeed::class)->name('notifications');
     Route::get('/notifications/preferences', AlertPreferences::class)->name('notifications.preferences');
@@ -29,6 +25,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Admin pages (admin, analyst, auditor only)
+Route::middleware(['auth', 'role:admin|analyst|auditor'])->group(function () {
+    Route::get('/admin/cesta', CestaManager::class);
+    Route::get('/admin/compras', ComprasPanel::class);
+    Route::get('/admin/master', ContaMasterPanel::class);
+});
+
+// Security dashboard (admin, auditor only)
+Route::middleware(['auth', 'role:admin|auditor'])->group(function () {
+    Route::get('/admin/security', SecurityDashboard::class);
 });
 
 require __DIR__.'/auth.php';

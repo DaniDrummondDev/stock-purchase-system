@@ -5,6 +5,7 @@ namespace App\Presentation\Livewire\Admin;
 use App\Infrastructure\Persistence\Models\IpBlacklist;
 use App\Infrastructure\Persistence\Models\SecurityEvent;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class SecurityDashboard extends Component
@@ -19,6 +20,8 @@ class SecurityDashboard extends Component
 
     public function mount(): void
     {
+        abort_unless(Auth::user()?->hasRole(['admin', 'auditor']), 403);
+
         $this->loadData();
     }
 

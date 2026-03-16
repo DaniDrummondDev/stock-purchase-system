@@ -7,6 +7,7 @@ use App\Application\Commands\CriarCestaCommand;
 use App\Application\Handlers\AlterarCestaHandler;
 use App\Application\Handlers\CriarCestaHandler;
 use App\Domain\Basket\Repositories\CestaRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -26,6 +27,8 @@ class CestaManager extends Component
 
     public function mount(CestaRepositoryInterface $cestaRepo): void
     {
+        abort_unless(Auth::user()?->hasRole(['admin', 'analyst']), 403);
+
         $this->resetAtivos();
         $this->loadData($cestaRepo);
     }

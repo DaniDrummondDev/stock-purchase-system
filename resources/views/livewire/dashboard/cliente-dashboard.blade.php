@@ -1,11 +1,18 @@
 <div>
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Dashboard do Cliente</h1>
-        <select wire:model.live="clienteId" class="mt-2 block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-            @foreach($clientes as $cliente)
-                <option value="{{ $cliente['id'] }}">{{ $cliente['nome'] }}</option>
-            @endforeach
-        </select>
+        <h1 class="text-2xl font-bold text-gray-900">
+            {{ $isAdmin ? 'Dashboard — Gestão de Carteiras' : 'Minha Carteira' }}
+        </h1>
+
+        @if($isAdmin && count($clientes) > 1)
+            <select wire:model.live="clienteId" class="mt-2 block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                @foreach($clientes as $cliente)
+                    <option value="{{ $cliente['id'] }}">{{ $cliente['nome'] }}</option>
+                @endforeach
+            </select>
+        @elseif(!empty($clientes))
+            <p class="mt-1 text-sm text-gray-500">{{ $clientes[0]['nome'] ?? '' }}</p>
+        @endif
     </div>
 
     @if(!empty($carteira))

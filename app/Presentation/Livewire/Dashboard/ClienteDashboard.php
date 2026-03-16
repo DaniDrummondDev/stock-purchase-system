@@ -5,6 +5,7 @@ namespace App\Presentation\Livewire\Dashboard;
 use App\Domain\Client\Repositories\ClienteRepositoryInterface;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
 use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ClienteDashboard extends Component
@@ -23,18 +24,37 @@ class ClienteDashboard extends Component
 
     public float $rentabilidade = 0;
 
+    public bool $isAdmin = false;
+
     public function mount(
         ClienteRepositoryInterface $clienteRepo,
     ): void {
-        $clientes = $clienteRepo->findAtivos();
+        $user = Auth::user();
+        $this->isAdmin = $user && $user->hasRole(['admin', 'analyst', 'auditor']);
 
-        $this->clientes = array_map(fn ($c) => [
-            'id' => $c->id(),
-            'nome' => $c->nome(),
-        ], $clientes);
+        if ($this->isAdmin) {
+            // Admin/analyst/auditor can see all clients
+            $clientes = $clienteRepo->findAtivos();
+            $this->clientes = array_map(fn ($c) => [
+                'id' => $c->id(),
+                'nome' => $c->nome(),
+            ], $clientes);
 
-        if (! empty($this->clientes)) {
-            $this->clienteId = $this->clientes[0]['id'];
+            if (! empty($this->clientes)) {
+                $this->clienteId = $this->clientes[0]['id'];
+            }
+        } else {
+            // Client can only see their own portfolio
+            if ($user && $user->cliente_id) {
+                $this->clienteId = $user->cliente_id;
+                $cliente = $clienteRepo->findById($user->cliente_id);
+                if ($cliente) {
+                    $this->clientes = [['id' => $cliente->id(), 'nome' => $cliente->nome()]];
+                }
+            }
+        }
+
+        if (! empty($this->clienteId)) {
             $this->loadCarteira();
         }
     }

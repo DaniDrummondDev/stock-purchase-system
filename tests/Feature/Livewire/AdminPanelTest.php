@@ -7,6 +7,8 @@ use App\Presentation\Livewire\Admin\ComprasPanel;
 use App\Presentation\Livewire\Admin\ContaMasterPanel;
 use Livewire\Livewire;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 test('cesta manager renders', function () {
     Livewire::test(CestaManager::class)
         ->assertSee('Gestão de Cesta Top Five')

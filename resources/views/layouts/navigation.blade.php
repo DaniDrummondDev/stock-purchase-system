@@ -4,13 +4,23 @@
             <div class="flex items-center space-x-8">
                 <a href="/dashboard" class="text-xl font-bold text-indigo-600">SPS</a>
                 <a href="/dashboard" class="text-sm font-medium {{ request()->is('dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Dashboard</a>
-                <a href="/admin/cesta" class="text-sm font-medium {{ request()->is('admin/cesta') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Cesta</a>
-                <a href="/admin/compras" class="text-sm font-medium {{ request()->is('admin/compras') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Compras</a>
-                <a href="/admin/master" class="text-sm font-medium {{ request()->is('admin/master') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Conta Master</a>
-                <a href="/admin/security" class="text-sm font-medium {{ request()->is('admin/security') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Security</a>
+
+                @role('admin|analyst|auditor')
+                    <a href="/admin/cesta" class="text-sm font-medium {{ request()->is('admin/cesta') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Cesta</a>
+                    <a href="/admin/compras" class="text-sm font-medium {{ request()->is('admin/compras') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Compras</a>
+                    <a href="/admin/master" class="text-sm font-medium {{ request()->is('admin/master') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Conta Master</a>
+                @endrole
+
+                @role('admin|auditor')
+                    <a href="/admin/security" class="text-sm font-medium {{ request()->is('admin/security') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Security</a>
+                @endrole
+
                 <a href="/chat" class="text-sm font-medium {{ request()->is('chat') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Chat IA</a>
                 <a href="/notifications" class="text-sm font-medium {{ request()->is('notifications') && !request()->is('notifications/preferences') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Alertas</a>
-                <a href="/api/documentation" class="text-sm text-gray-400 hover:text-gray-600">API Docs</a>
+
+                @role('admin|analyst|auditor')
+                    <a href="/api/documentation" class="text-sm text-gray-400 hover:text-gray-600">API Docs</a>
+                @endrole
             </div>
 
             <div class="flex items-center space-x-4">

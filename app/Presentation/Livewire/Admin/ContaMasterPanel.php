@@ -3,6 +3,7 @@
 namespace App\Presentation\Livewire\Admin;
 
 use App\Infrastructure\Persistence\Models\CustodiaMaster;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ContaMasterPanel extends Component
@@ -11,6 +12,8 @@ class ContaMasterPanel extends Component
 
     public function mount(): void
     {
+        abort_unless(Auth::user()?->hasRole(['admin', 'analyst', 'auditor']), 403);
+
         $this->saldos = CustodiaMaster::orderBy('ticker')
             ->get()
             ->map(fn ($m) => [

@@ -9,7 +9,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Clear all data (no production data exists)
+        // Skip if already converted to UUID (idempotent)
+        $columnType = DB::selectOne("SELECT data_type FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'id'");
+
+        if ($columnType && $columnType->data_type === 'uuid') {
+            // Already converted — ensure cliente_id column exists
+            if (! Schema::hasColumn('users', 'cliente_id')) {
+                Schema::table('users', function (Blueprint $table) {
+                    $table->uuid('cliente_id')->nullable()->after('role');
+                    $table->index('cliente_id');
+                });
+            }
+
+            return;
+        }
+
+        // Clear all data (safe: this only runs on first conversion)
         DB::table('model_has_roles')->truncate();
         DB::table('model_has_permissions')->truncate();
         DB::table('personal_access_tokens')->truncate();

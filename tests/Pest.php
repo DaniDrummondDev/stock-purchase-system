@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 /*
@@ -51,16 +52,23 @@ function something()
 }
 
 /**
- * Create and authenticate a test user for API tests.
+ * Create and authenticate a test user with admin role (Spatie + column).
  */
 function authenticateAsAdmin(): User
 {
+    // Ensure roles exist
+    $role = Role::firstOrCreate(
+        ['name' => 'admin', 'guard_name' => 'web']
+    );
+
     $user = User::factory()->create([
         'role' => 'admin',
         'email_verified_at' => now(),
     ]);
 
-    test()->actingAs($user, 'sanctum');
+    $user->assignRole($role);
+
+    test()->actingAs($user);
 
     return $user;
 }

@@ -1,0 +1,600 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Stock Purchase System API",
+        "description": "API para o Sistema de Compra Programada de Ações",
+        "contact": {
+            "name": "API Support",
+            "email": "support@stockpurchase.local"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development"
+        }
+    ],
+    "paths": {
+        "/api/ai/recomendacao-cesta": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Gerar recomendação IA para cesta de ações",
+                "operationId": "0f7f7d90d158682b99266b9b0abbfa1e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "limit": {
+                                        "description": "Número de sugestões (1-10)",
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Recomendação gerada com sucesso"
+                    },
+                    "404": {
+                        "description": "Cesta ativa não encontrada"
+                    },
+                    "503": {
+                        "description": "Serviço de IA indisponível"
+                    }
+                }
+            }
+        },
+        "/api/ai/chat": {
+            "post": {
+                "tags": [
+                    "AI"
+                ],
+                "summary": "Chat com assistente financeiro IA",
+                "operationId": "5bbb39becd2ee2f339a6f1ddc0fb3462",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cliente_id",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "cliente_id": {
+                                        "description": "UUID do cliente",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "Como está minha carteira?"
+                                    },
+                                    "session_id": {
+                                        "description": "UUID da sessão (opcional)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Resposta do assistente"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    },
+                    "503": {
+                        "description": "Serviço de IA indisponível"
+                    }
+                }
+            }
+        },
+        "/api/admin/cesta": {
+            "post": {
+                "tags": [
+                    "Cesta"
+                ],
+                "summary": "Criar ou atualizar cesta Top Five",
+                "operationId": "dd00eef12aee445fd8d5c2a6704413a1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nome",
+                                    "ativos"
+                                ],
+                                "properties": {
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "Top Five - Março 2026"
+                                    },
+                                    "ativos": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "ticker": {
+                                                    "type": "string",
+                                                    "example": "PETR4"
+                                                },
+                                                "percentual": {
+                                                    "type": "number",
+                                                    "example": 30
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cesta criada/atualizada com sucesso"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/api/admin/cesta/atual": {
+            "get": {
+                "tags": [
+                    "Cesta"
+                ],
+                "summary": "Obter cesta ativa atual",
+                "operationId": "a0cc8d0829d96abadb8757dfdc79b647",
+                "responses": {
+                    "200": {
+                        "description": "Cesta ativa"
+                    },
+                    "404": {
+                        "description": "Nenhuma cesta ativa"
+                    }
+                }
+            }
+        },
+        "/api/admin/cesta/historico": {
+            "get": {
+                "tags": [
+                    "Cesta"
+                ],
+                "summary": "Histórico de cestas",
+                "operationId": "0f92bd63bf8a786e8c30cd7261a5a90b",
+                "responses": {
+                    "200": {
+                        "description": "Lista de todas as cestas"
+                    }
+                }
+            }
+        },
+        "/api/clientes/adesao": {
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Adesão de novo cliente",
+                "operationId": "9f1a517a68322bc722bf8486be169ddc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nome",
+                                    "cpf",
+                                    "email",
+                                    "valorMensal"
+                                ],
+                                "properties": {
+                                    "nome": {
+                                        "type": "string",
+                                        "example": "João Silva"
+                                    },
+                                    "cpf": {
+                                        "type": "string",
+                                        "example": "12345678909"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "joao@email.com"
+                                    },
+                                    "valorMensal": {
+                                        "type": "number",
+                                        "example": 1000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente criado com sucesso"
+                    },
+                    "409": {
+                        "description": "CPF duplicado"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/api/clientes/{clienteId}/saida": {
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Saída do cliente do programa",
+                "operationId": "fb1f4944e3d03aa926db6d2d2d5f70ea",
+                "parameters": [
+                    {
+                        "name": "clienteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente saiu com sucesso"
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    },
+                    "422": {
+                        "description": "Cliente já inativo"
+                    }
+                }
+            }
+        },
+        "/api/clientes/{clienteId}/valor-mensal": {
+            "put": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Alterar valor mensal do cliente",
+                "operationId": "5f7d8c84e2e18c81b6ed72a5155db494",
+                "parameters": [
+                    {
+                        "name": "clienteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "valorMensal"
+                                ],
+                                "properties": {
+                                    "valorMensal": {
+                                        "type": "number",
+                                        "example": 1500
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Valor mensal alterado"
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    },
+                    "422": {
+                        "description": "Valor inválido"
+                    }
+                }
+            }
+        },
+        "/api/clientes/{clienteId}/carteira": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Consultar carteira do cliente",
+                "operationId": "80b7962669f85b2f1effcce56c3c24e5",
+                "parameters": [
+                    {
+                        "name": "clienteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Carteira do cliente"
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    }
+                }
+            }
+        },
+        "/api/admin/motor/executar-compra": {
+            "post": {
+                "tags": [
+                    "Motor de Compra"
+                ],
+                "summary": "Executar compra programada",
+                "operationId": "d295bf599724190323b5d4bc9f9b10d6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "dataExecucao"
+                                ],
+                                "properties": {
+                                    "dataExecucao": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-02-25"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compra executada com sucesso"
+                    },
+                    "409": {
+                        "description": "Compra já executada para esta data"
+                    },
+                    "422": {
+                        "description": "Dados inválidos ou pré-condições não atendidas"
+                    }
+                }
+            }
+        },
+        "/api/admin/motor/compras": {
+            "get": {
+                "tags": [
+                    "Motor de Compra"
+                ],
+                "summary": "Listar compras programadas",
+                "operationId": "a8d53399a41163b4bec79af605104043",
+                "responses": {
+                    "200": {
+                        "description": "Lista de compras"
+                    }
+                }
+            }
+        },
+        "/api/admin/motor/compras/{id}": {
+            "get": {
+                "tags": [
+                    "Motor de Compra"
+                ],
+                "summary": "Detalhes de uma compra programada",
+                "operationId": "ffaf072ff99c2a80d410c61495cb6e7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da compra"
+                    },
+                    "404": {
+                        "description": "Compra não encontrada"
+                    }
+                }
+            }
+        },
+        "/api/admin/cotacoes/importar": {
+            "post": {
+                "tags": [
+                    "Cotações"
+                ],
+                "summary": "Importar arquivo COTAHIST da B3",
+                "operationId": "45e282c9242bdba648b28c7d4c66f3b5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "filePath"
+                                ],
+                                "properties": {
+                                    "filePath": {
+                                        "type": "string",
+                                        "example": "cotacoes/COTAHIST_D20260225.TXT"
+                                    },
+                                    "async": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Importação concluída (sync)"
+                    },
+                    "202": {
+                        "description": "Importação enfileirada (async)"
+                    },
+                    "422": {
+                        "description": "Arquivo inválido"
+                    }
+                }
+            }
+        },
+        "/api/cotacoes/{ticker}": {
+            "get": {
+                "tags": [
+                    "Cotações"
+                ],
+                "summary": "Cotação mais recente de um ativo",
+                "operationId": "c1e3241692cfa961e73628520bd2fec2",
+                "parameters": [
+                    {
+                        "name": "ticker",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cotação encontrada"
+                    },
+                    "404": {
+                        "description": "Cotação não encontrada"
+                    }
+                }
+            }
+        },
+        "/api/cotacoes/{ticker}/{data}": {
+            "get": {
+                "tags": [
+                    "Cotações"
+                ],
+                "summary": "Cotação de um ativo em data específica",
+                "operationId": "dd004f5deef111d1735dd636cfbde27c",
+                "parameters": [
+                    {
+                        "name": "ticker",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cotação encontrada"
+                    },
+                    "404": {
+                        "description": "Cotação não encontrada"
+                    }
+                }
+            }
+        },
+        "/api/admin/rebalanceamento/executar": {
+            "post": {
+                "tags": [
+                    "Rebalanceamento"
+                ],
+                "summary": "Executar rebalanceamento tipo B (desvio de proporção)",
+                "operationId": "562c14f5f1c64de80db986d82f59ae5e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "clienteId": {
+                                        "description": "Opcional — se vazio, rebalanceia todos",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rebalanceamento executado"
+                    },
+                    "422": {
+                        "description": "Pré-condições não atendidas"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "AI",
+            "description": "AI"
+        },
+        {
+            "name": "Cesta",
+            "description": "Cesta"
+        },
+        {
+            "name": "Clientes",
+            "description": "Clientes"
+        },
+        {
+            "name": "Motor de Compra",
+            "description": "Motor de Compra"
+        },
+        {
+            "name": "Cotações",
+            "description": "Cotações"
+        },
+        {
+            "name": "Rebalanceamento",
+            "description": "Rebalanceamento"
+        }
+    ]
+}

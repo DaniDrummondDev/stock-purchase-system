@@ -3,6 +3,7 @@
 namespace App\Presentation\Livewire\Admin;
 
 use App\Domain\PurchaseEngine\Repositories\CompraProgramadaRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ComprasPanel extends Component
@@ -11,6 +12,8 @@ class ComprasPanel extends Component
 
     public function mount(CompraProgramadaRepositoryInterface $repo): void
     {
+        abort_unless(Auth::user()?->hasRole(['admin', 'analyst', 'auditor']), 403);
+
         $all = $repo->findAll();
 
         $this->compras = array_map(fn ($c) => [
