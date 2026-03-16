@@ -85,7 +85,7 @@ docker compose exec app php artisan db:seed
 
 ### Utilizadores de Teste
 
-O seed cria 6 utilizadores prontos para uso (password: `password`):
+O seed cria 6 utilizadores prontos para uso (password: `Sps@2026#Secure`):
 
 | Email | Role | Descrição |
 |-------|------|-----------|

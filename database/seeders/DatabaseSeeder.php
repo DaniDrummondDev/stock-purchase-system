@@ -49,11 +49,11 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            User::firstOrCreate(
+            User::updateOrCreate(
                 ['email' => $userData['email']],
                 [
                     ...$userData,
-                    'password' => 'password',
+                    'password' => 'Sps@2026#Secure',
                     'email_verified_at' => now(),
                 ],
             );
