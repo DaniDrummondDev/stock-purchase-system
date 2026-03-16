@@ -2,6 +2,8 @@
 
 use App\Infrastructure\Persistence\Models\Cliente;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 test('adesao cria cliente com sucesso', function () {
     $response = $this->postJson('/api/clientes/adesao', [
         'nome' => 'João Silva',

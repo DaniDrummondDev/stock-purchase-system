@@ -73,7 +73,7 @@
 - [x] 2.4 — CQRS Queries (ObterCestaAtual, ObterHistoricoCesta)
 - [x] 2.5 — API Endpoints (POST criar/atualizar, GET atual, GET histórico)
 - [x] 2.6 — Domain Events (CestaCriada, CestaAlterada com diff)
-- [ ] 2.7 — Painel admin básico (Livewire) — deferred to Sprint 7
+- [x] 2.7 — Painel admin básico (Livewire) — implemented in Sprint 7 (CestaManager, ComprasPanel)
 - [x] 2.8 — Tests (34 new: 8 Percentual, 8 Ticker, 9 Cesta entity, 9 API feature)
 
 ---

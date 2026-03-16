@@ -6,6 +6,8 @@ use App\Infrastructure\Persistence\Models\Cliente;
 use App\Infrastructure\Persistence\Models\Cotacao;
 use App\Infrastructure\Persistence\Models\OperacaoIR;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 function setupIRScenario(): void
 {
     $cesta = Cesta::create(['nome' => 'Top Five', 'ativo' => true]);

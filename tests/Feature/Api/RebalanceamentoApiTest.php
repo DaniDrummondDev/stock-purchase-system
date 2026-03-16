@@ -6,6 +6,8 @@ use App\Infrastructure\Persistence\Models\Cliente;
 use App\Infrastructure\Persistence\Models\Cotacao;
 use App\Infrastructure\Persistence\Models\Custodia;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 function setupRebalanceamentoScenario(): void
 {
     // Create active cesta

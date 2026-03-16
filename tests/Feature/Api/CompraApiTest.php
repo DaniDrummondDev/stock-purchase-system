@@ -7,6 +7,8 @@ use App\Infrastructure\Persistence\Models\CompraDistribuicao;
 use App\Infrastructure\Persistence\Models\Cotacao;
 use App\Infrastructure\Persistence\Models\CustodiaMaster;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 function setupCompraScenario(): void
 {
     // Create active cesta

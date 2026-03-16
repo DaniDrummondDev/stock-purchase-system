@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Str;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 test('POST /api/ai/recomendacao-cesta returns 404 when no active cesta exists', function () {
     $response = $this->postJson('/api/ai/recomendacao-cesta');
 

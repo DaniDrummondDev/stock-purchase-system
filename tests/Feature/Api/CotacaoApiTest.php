@@ -2,6 +2,8 @@
 
 use App\Infrastructure\Persistence\Models\Cotacao;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 test('POST importar processa arquivo sync', function () {
     $response = $this->postJson('/api/admin/cotacoes/importar', [
         'filePath' => 'tests/fixtures/cotahist_sample.txt',

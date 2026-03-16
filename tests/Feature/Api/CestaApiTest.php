@@ -3,6 +3,8 @@
 use App\Infrastructure\Persistence\Models\Cesta;
 use App\Infrastructure\Persistence\Models\CestaAtivo;
 
+beforeEach(fn () => authenticateAsAdmin());
+
 function validCestaPayload(string $nome = 'Top Five - Março 2026'): array
 {
     return [
