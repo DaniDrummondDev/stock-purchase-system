@@ -184,16 +184,16 @@
 - [x] 9a.8 — Tests (32 new: 7 RiskBand, 7 RiskScore, 4 RiskAnalysisService, 4 RiskAnalystAgent, 4 TaxAnalyst, 3 MarketIntel, 3 BcbProvider)
 - [x] 9a.9 — Domain VOs: RiskScore, RiskBand (enum), PortfolioRiskMetrics, MacroIndicators
 
-## [ ] Sprint 9b — Assistant + Simulator + Educator
+## [x] Sprint 9b — Assistant + Simulator + Educator
 **Objetivo:** Assistente virtual completo com simulação e educação
 
-- [ ] 9b.1 — ChatAssistantService + RAG (pgvector)
-- [ ] 9b.2 — SimulatorAgent (what-if projections)
-- [ ] 9b.3 — EducatorAgent (contextual financial education)
-- [ ] 9b.4 — ChatWindow Livewire component (streaming)
-- [ ] 9b.5 — chat_messages migration (normalizes chat_contextos.mensagens)
-- [ ] 9b.6 — Guardrails (scope limiter)
-- [ ] 9b.7 — Tests
+- [x] 9b.1 — Enhanced chat endpoint: all 6 agents wired (Portfolio, Risk, Tax, Market, Simulator, Educator)
+- [x] 9b.2 — SimulatorAgent (simulate_aporte_change, simulate_ticker_swap, project_portfolio with 3/6/12 month projections)
+- [x] 9b.3 — EducatorAgent (explain_concept with 13-term glossary + contextual portfolio examples via LLM)
+- [x] 9b.4 — ChatWindow Livewire component (/chat route, message bubbles, typing animation, auto-scroll)
+- [x] 9b.5 — chat_messages migration (normalized table: session_id FK, role, content, agent_results jsonb, immutable)
+- [x] 9b.6 — ScopeGuardrail (financial keyword matching, blocked content detection for direct buy/sell recommendations)
+- [x] 9b.7 — Tests (17 new: 4 Simulator, 5 Educator, 4 ScopeGuardrail, 2 ChatWindow, 2 ChatMessage)
 
 ---
 

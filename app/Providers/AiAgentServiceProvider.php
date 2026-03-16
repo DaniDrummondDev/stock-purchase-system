@@ -13,9 +13,11 @@ use App\Domain\Basket\Repositories\CestaRepositoryInterface;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
 use App\Domain\MarketData\Events\CotacoesImportadas;
 use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
+use App\Infrastructure\AI\Agents\EducatorAgent;
 use App\Infrastructure\AI\Agents\MarketIntelligenceAgent;
 use App\Infrastructure\AI\Agents\PortfolioAnalystAgent;
 use App\Infrastructure\AI\Agents\RiskAnalystAgent;
+use App\Infrastructure\AI\Agents\SimulatorAgent;
 use App\Infrastructure\AI\Agents\TaxAnalystAgent;
 use App\Infrastructure\AI\AiConfigResolver;
 use App\Infrastructure\AI\DataProviders\BcbProvider;
@@ -25,6 +27,7 @@ use App\Infrastructure\AI\Orchestrator\AgentOrchestrator;
 use App\Infrastructure\AI\Safety\AgentCircuitBreaker;
 use App\Infrastructure\AI\Safety\AgentTimeoutConfig;
 use App\Infrastructure\AI\Safety\SafeAgentExecutor;
+use App\Infrastructure\AI\Safety\ScopeGuardrail;
 use App\Infrastructure\AI\Services\EmbeddingService;
 use App\Infrastructure\AI\Services\RecommendationService;
 use App\Infrastructure\Kafka\KafkaProducer;
@@ -139,6 +142,28 @@ class AiAgentServiceProvider extends ServiceProvider
                 configResolver: $app->make(AiConfigResolver::class),
             );
         });
+
+        // Sprint 9b — SimulatorAgent
+        $this->app->singleton(SimulatorAgent::class, function ($app) {
+            return new SimulatorAgent(
+                cestaRepo: $app->make(CestaRepositoryInterface::class),
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+            );
+        });
+
+        // Sprint 9b — EducatorAgent
+        $this->app->singleton(EducatorAgent::class, function ($app) {
+            return new EducatorAgent(
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                cestaRepo: $app->make(CestaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+                configResolver: $app->make(AiConfigResolver::class),
+            );
+        });
+
+        // Sprint 9b — ScopeGuardrail
+        $this->app->singleton(ScopeGuardrail::class);
     }
 
     public function boot(): void

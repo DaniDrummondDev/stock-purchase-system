@@ -5,9 +5,16 @@ namespace App\Presentation\Http\Controllers\Api;
 use App\Domain\AI\Contracts\RecommendationServiceInterface;
 use App\Domain\AI\Contracts\TriggerType;
 use App\Domain\Basket\Repositories\CestaRepositoryInterface;
+use App\Infrastructure\AI\Agents\EducatorAgent;
+use App\Infrastructure\AI\Agents\MarketIntelligenceAgent;
 use App\Infrastructure\AI\Agents\PortfolioAnalystAgent;
+use App\Infrastructure\AI\Agents\RiskAnalystAgent;
+use App\Infrastructure\AI\Agents\SimulatorAgent;
+use App\Infrastructure\AI\Agents\TaxAnalystAgent;
 use App\Infrastructure\AI\Orchestrator\AgentOrchestrator;
+use App\Infrastructure\AI\Safety\ScopeGuardrail;
 use App\Infrastructure\Persistence\Models\ChatContexto;
+use App\Infrastructure\Persistence\Models\ChatMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -94,7 +101,13 @@ class AiController extends Controller
     public function chat(
         Request $request,
         AgentOrchestrator $orchestrator,
+        ScopeGuardrail $guardrail,
         PortfolioAnalystAgent $portfolioAgent,
+        RiskAnalystAgent $riskAgent,
+        TaxAnalystAgent $taxAgent,
+        MarketIntelligenceAgent $marketAgent,
+        SimulatorAgent $simulatorAgent,
+        EducatorAgent $educatorAgent,
     ): JsonResponse {
         $validated = $request->validate([
             'cliente_id' => 'required|uuid|exists:clientes,id',
@@ -103,29 +116,59 @@ class AiController extends Controller
         ]);
 
         try {
+            // Check guardrails
+            $blocked = $guardrail->hasBlockedContent($validated['message']);
+            if ($blocked) {
+                return response()->json([
+                    'data' => [
+                        'session_id' => $validated['session_id'] ?? null,
+                        'response' => $blocked,
+                        'agent_executions' => [],
+                    ],
+                ]);
+            }
+
             // Load or create chat session
             $chatContexto = $this->getOrCreateChatContexto(
                 $validated['cliente_id'],
                 $validated['session_id'] ?? null,
             );
 
-            // Append user message
-            $chatContexto->appendMessage('user', $validated['message']);
-            $chatContexto->save();
+            // Save user message to normalized table
+            ChatMessage::create([
+                'session_id' => $chatContexto->id,
+                'cliente_id' => $validated['cliente_id'],
+                'role' => 'user',
+                'content' => $validated['message'],
+                'created_at' => now(),
+            ]);
 
-            // Configure orchestrator with available agents
+            // Configure orchestrator with ALL agents
             $orchestrator = $orchestrator
                 ->forCliente($validated['cliente_id'], TriggerType::Chat)
-                ->withAgents([$portfolioAgent]);
+                ->withAgents([
+                    $portfolioAgent,
+                    $riskAgent,
+                    $taxAgent,
+                    $marketAgent,
+                    $simulatorAgent,
+                    $educatorAgent,
+                ]);
 
             // Send through laravel/ai
             $response = $orchestrator->prompt($validated['message']);
-
             $assistantMessage = $response->text();
 
-            // Append assistant response
-            $chatContexto->appendMessage('assistant', $assistantMessage);
-            $chatContexto->save();
+            // Save assistant message
+            ChatMessage::create([
+                'session_id' => $chatContexto->id,
+                'cliente_id' => $validated['cliente_id'],
+                'role' => 'assistant',
+                'content' => $assistantMessage,
+                'created_at' => now(),
+            ]);
+
+            $chatContexto->touch();
 
             return response()->json([
                 'data' => [

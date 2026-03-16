@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Domain\AI\Contracts\AgentContext;
+use App\Domain\AI\Contracts\AgentResult;
 use App\Domain\AI\Contracts\FinanceAgentInterface;
 use App\Domain\AI\Contracts\TriggerType;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
@@ -58,7 +59,7 @@ it('execute with analyze_tax_status and mocked repos returns result', function (
 
     $result = $agent->execute($context);
 
-    expect($result)->toBeInstanceOf(\App\Domain\AI\Contracts\AgentResult::class)
+    expect($result)->toBeInstanceOf(AgentResult::class)
         ->and($result->confidence)->toBeGreaterThanOrEqual(0.0)
         ->and($result->confidence)->toBeLessThanOrEqual(1.0);
 });
