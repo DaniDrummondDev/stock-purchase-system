@@ -74,13 +74,10 @@ docker compose exec app composer install
 # 6. Gere a application key
 docker compose exec app php artisan key:generate
 
-# 7. Execute as migrations
-docker compose exec app php artisan migrate
+# 7. Execute as migrations e seed (cria utilizadores de teste)
+docker compose exec app php artisan migrate --seed
 
-# 8. Crie os utilizadores de teste
-docker compose exec app php artisan db:seed
-
-# 9. Pronto!
+# 8. Pronto!
 ```
 
 ### Utilizadores de Teste

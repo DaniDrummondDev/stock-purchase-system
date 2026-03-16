@@ -7,6 +7,7 @@ use App\Application\Commands\CriarCestaCommand;
 use App\Application\Handlers\AlterarCestaHandler;
 use App\Application\Handlers\CriarCestaHandler;
 use App\Domain\Basket\Repositories\CestaRepositoryInterface;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class CestaManager extends Component
@@ -93,6 +94,18 @@ class CestaManager extends Component
             'ativos' => array_map(fn ($a) => $a->ticker()->value().' ('.$a->percentual()->toDecimalString().'%)', $c->ativos()),
             'data' => $c->createdAt()->format('d/m/Y H:i'),
         ], $all);
+    }
+
+    #[On('cesta-suggestion-applied')]
+    public function applySuggestion(array $ativos): void
+    {
+        $this->ativos = array_slice(array_map(fn ($a) => [
+            'ticker' => strtoupper($a['ticker']),
+            'percentual' => (float) $a['percentual'],
+        ], $ativos), 0, 5);
+
+        $this->message = 'Sugestão IA aplicada. Revise e salve.';
+        $this->messageType = 'success';
     }
 
     private function resetAtivos(): void

@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\AI\Contracts\EmbeddingServiceInterface;
+use App\Domain\AI\Contracts\RecommendationServiceInterface;
 use App\Domain\AI\DataProviders\DataProviderRegistry;
 use App\Domain\AI\Orchestrator\OrchestratorPromptBuilder;
+use App\Domain\Basket\Repositories\CestaRepositoryInterface;
+use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
+use App\Domain\MarketData\Events\CotacoesImportadas;
+use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
+use App\Infrastructure\AI\Agents\PortfolioAnalystAgent;
 use App\Infrastructure\AI\AiConfigResolver;
 use App\Infrastructure\AI\DataProviders\CotahistProvider;
 use App\Infrastructure\AI\DataProviders\DataProviderManager;
@@ -13,7 +20,11 @@ use App\Infrastructure\AI\Orchestrator\AgentOrchestrator;
 use App\Infrastructure\AI\Safety\AgentCircuitBreaker;
 use App\Infrastructure\AI\Safety\AgentTimeoutConfig;
 use App\Infrastructure\AI\Safety\SafeAgentExecutor;
+use App\Infrastructure\AI\Services\EmbeddingService;
+use App\Infrastructure\AI\Services\RecommendationService;
+use App\Infrastructure\Listeners\UpdateEmbeddingsOnCotacoesImported;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AiAgentServiceProvider extends ServiceProvider
@@ -64,5 +75,41 @@ class AiAgentServiceProvider extends ServiceProvider
                 timeoutConfig: $app->make(AgentTimeoutConfig::class),
             );
         });
+
+        // Sprint 8b — EmbeddingService
+        $this->app->singleton(EmbeddingServiceInterface::class, function ($app) {
+            return new EmbeddingService(
+                configResolver: $app->make(AiConfigResolver::class),
+            );
+        });
+
+        // Sprint 8b — RecommendationService
+        $this->app->singleton(RecommendationServiceInterface::class, function ($app) {
+            return new RecommendationService(
+                embeddingService: $app->make(EmbeddingServiceInterface::class),
+                cestaRepo: $app->make(CestaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+                configResolver: $app->make(AiConfigResolver::class),
+            );
+        });
+
+        // Sprint 8b — PortfolioAnalystAgent
+        $this->app->singleton(PortfolioAnalystAgent::class, function ($app) {
+            return new PortfolioAnalystAgent(
+                cestaRepo: $app->make(CestaRepositoryInterface::class),
+                custodiaRepo: $app->make(CustodiaRepositoryInterface::class),
+                cotacaoRepo: $app->make(CotacaoRepositoryInterface::class),
+                recommendationService: $app->make(RecommendationServiceInterface::class),
+            );
+        });
+    }
+
+    public function boot(): void
+    {
+        // Register event listeners
+        Event::listen(
+            CotacoesImportadas::class,
+            UpdateEmbeddingsOnCotacoesImported::class,
+        );
     }
 }

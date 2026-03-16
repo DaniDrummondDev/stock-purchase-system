@@ -1,5 +1,6 @@
 <?php
 
+use App\Presentation\Http\Controllers\Api\AiController;
 use App\Presentation\Http\Controllers\Api\CestaController;
 use App\Presentation\Http\Controllers\Api\ClienteController;
 use App\Presentation\Http\Controllers\Api\CompraController;
@@ -40,5 +41,11 @@ Route::middleware('throttle:api')->group(function () {
 
     // Rebalanceamento (Admin)
     Route::post('/admin/rebalanceamento/executar', [RebalanceamentoController::class, 'executar']);
+
+    // AI
+    Route::prefix('ai')->group(function () {
+        Route::post('/recomendacao-cesta', [AiController::class, 'recomendacaoCesta']);
+        Route::post('/chat', [AiController::class, 'chat']);
+    });
 
 }); // end throttle:api group

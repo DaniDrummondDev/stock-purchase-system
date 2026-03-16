@@ -48,6 +48,9 @@
         </div>
     @endif
 
+    {{-- AI Recommendation --}}
+    <livewire:admin.ai-cesta-recommendation />
+
     {{-- History --}}
     @if(!empty($historico))
         <div class="bg-white rounded-lg shadow overflow-hidden">
