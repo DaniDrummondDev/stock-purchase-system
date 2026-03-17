@@ -15,8 +15,19 @@
                     <a href="/admin/security" class="text-sm font-medium {{ request()->is('admin/security') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Security</a>
                 @endrole
 
+                @role('admin')
+                    <a href="/admin/ai-config" class="text-sm font-medium {{ request()->is('admin/ai-config') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">AI Config</a>
+                @endrole
+
+                @auth
+                    @if(!Auth::user()->cliente_id && Auth::user()->hasRole('client'))
+                        <a href="/adesao" class="text-sm font-medium px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200 {{ request()->is('adesao') ? 'bg-indigo-200' : '' }}">Aderir ao Programa</a>
+                    @endif
+                @endauth
+
                 <a href="/chat" class="text-sm font-medium {{ request()->is('chat') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Chat IA</a>
                 <a href="/notifications" class="text-sm font-medium {{ request()->is('notifications') && !request()->is('notifications/preferences') ? 'text-indigo-600 border-b-2 border-indigo-600 pb-5 pt-5' : 'text-gray-500 hover:text-gray-700' }}">Alertas</a>
+                <livewire:notifications.notification-bell />
 
                 @role('admin|analyst|auditor')
                     <a href="/api/documentation" class="text-sm text-gray-400 hover:text-gray-600">API Docs</a>

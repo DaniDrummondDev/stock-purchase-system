@@ -60,7 +60,7 @@ class AiCestaRecommendation extends Component
             'percentual' => $s['percentual'],
         ], $this->suggestion['suggestedTickers']);
 
-        $this->dispatch('cesta-suggestion-applied', ativos: $ativos);
+        $this->dispatch('cesta-suggestion-applied', ativos: $ativos)->to(CestaManager::class);
     }
 
     public function render()

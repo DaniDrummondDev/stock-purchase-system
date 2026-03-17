@@ -77,7 +77,10 @@ docker compose exec app php artisan key:generate
 # 7. Execute as migrations e seed (cria utilizadores de teste)
 docker compose exec app php artisan migrate --seed
 
-# 8. Pronto!
+# 8. Build dos assets frontend (CSS, JS, ícones)
+docker compose exec app npm run build
+
+# 9. Pronto!
 ```
 
 ### Utilizadores de Teste

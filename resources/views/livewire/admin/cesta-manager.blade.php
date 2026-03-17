@@ -19,7 +19,7 @@
             <div class="space-y-2">
                 <label class="block text-sm font-medium text-gray-700">Ativos (5 obrigatórios, soma = 100%)</label>
                 @foreach($ativos as $index => $ativo)
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-2" wire:key="ativo-{{ $index }}-{{ $ativo['ticker'] ?? '' }}-{{ $ativo['percentual'] ?? '' }}">
                         <input type="text" wire:model="ativos.{{ $index }}.ticker" class="w-32 rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="PETR4">
                         <input type="number" wire:model="ativos.{{ $index }}.percentual" step="0.01" class="w-24 rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="%">
                         <span class="text-gray-400 text-sm self-center">%</span>

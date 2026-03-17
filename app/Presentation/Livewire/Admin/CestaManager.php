@@ -27,7 +27,7 @@ class CestaManager extends Component
 
     public function mount(CestaRepositoryInterface $cestaRepo): void
     {
-        abort_unless(Auth::user()?->hasRole(['admin', 'analyst']), 403);
+        abort_unless(Auth::user()?->hasRole(['admin', 'analyst', 'auditor']), 403);
 
         $this->resetAtivos();
         $this->loadData($cestaRepo);

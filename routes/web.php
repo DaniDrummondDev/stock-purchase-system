@@ -4,8 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Presentation\Livewire\Admin\CestaManager;
 use App\Presentation\Livewire\Admin\ComprasPanel;
 use App\Presentation\Livewire\Admin\ContaMasterPanel;
+use App\Presentation\Livewire\Admin\AiConfigPanel;
 use App\Presentation\Livewire\Admin\SecurityDashboard;
 use App\Presentation\Livewire\Chat\ChatWindow;
+use App\Presentation\Livewire\Client\AdesaoForm;
 use App\Presentation\Livewire\Dashboard\ClienteDashboard;
 use App\Presentation\Livewire\Notifications\AlertPreferences;
 use App\Presentation\Livewire\Notifications\NotificationFeed;
@@ -18,6 +20,7 @@ Route::get('/', function () {
 // Authenticated pages (all users)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', ClienteDashboard::class)->name('dashboard');
+    Route::get('/adesao', AdesaoForm::class)->name('adesao');
     Route::get('/chat', ChatWindow::class)->name('chat');
     Route::get('/notifications', NotificationFeed::class)->name('notifications');
     Route::get('/notifications/preferences', AlertPreferences::class)->name('notifications.preferences');
@@ -37,6 +40,11 @@ Route::middleware(['auth', 'role:admin|analyst|auditor'])->group(function () {
 // Security dashboard (admin, auditor only)
 Route::middleware(['auth', 'role:admin|auditor'])->group(function () {
     Route::get('/admin/security', SecurityDashboard::class);
+});
+
+// AI config (admin only)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/ai-config', AiConfigPanel::class);
 });
 
 require __DIR__.'/auth.php';

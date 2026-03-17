@@ -2,6 +2,9 @@
 
 namespace App\Presentation\Livewire\Dashboard;
 
+use App\Application\Commands\AlterarValorMensalCommand;
+use App\Application\Handlers\AlterarValorMensalHandler;
+use App\Domain\Basket\Repositories\CestaRepositoryInterface;
 use App\Domain\Client\Repositories\ClienteRepositoryInterface;
 use App\Domain\Client\Repositories\CustodiaRepositoryInterface;
 use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
@@ -25,6 +28,18 @@ class ClienteDashboard extends Component
     public float $rentabilidade = 0;
 
     public bool $isAdmin = false;
+
+    public float $valorMensal = 0;
+
+    public float $novoValorMensal = 0;
+
+    public bool $editandoValor = false;
+
+    public string $message = '';
+
+    public string $messageType = '';
+
+    public ?array $cestaAtiva = null;
 
     public function mount(
         ClienteRepositoryInterface $clienteRepo,
@@ -74,11 +89,28 @@ class ClienteDashboard extends Component
         $custodiaRepo = app(CustodiaRepositoryInterface::class);
         $cotacaoRepo = app(CotacaoRepositoryInterface::class);
 
+        $cestaRepo = app(CestaRepositoryInterface::class);
+        $cesta = $cestaRepo->findAtiva();
+        if ($cesta) {
+            $this->cestaAtiva = [
+                'nome' => $cesta->nome(),
+                'ativos' => array_map(fn ($a) => [
+                    'ticker' => $a->ticker()->value(),
+                    'percentual' => $a->percentual()->toDecimalString(),
+                ], $cesta->ativos()),
+            ];
+        } else {
+            $this->cestaAtiva = null;
+        }
+
         $cliente = $clienteRepo->findById($this->clienteId);
 
         if (! $cliente) {
             return;
         }
+
+        $this->valorMensal = $cliente->valorMensal()->cents() / 100;
+        $this->novoValorMensal = $this->valorMensal;
 
         $custodias = $custodiaRepo->findByClienteId($this->clienteId);
         $tickers = array_map(fn ($c) => $c->ticker(), $custodias);
@@ -140,6 +172,28 @@ class ClienteDashboard extends Component
         $this->rentabilidade = $this->valorInvestido > 0
             ? (($this->saldoTotal - $this->valorInvestido) / $this->valorInvestido) * 100
             : 0;
+    }
+
+    public function alterarValorMensal(AlterarValorMensalHandler $handler): void
+    {
+        $this->validate([
+            'novoValorMensal' => 'required|numeric|min:100',
+        ]);
+
+        try {
+            $handler->handle(new AlterarValorMensalCommand(
+                clienteId: $this->clienteId,
+                valorMensal: $this->novoValorMensal,
+            ));
+
+            $this->editandoValor = false;
+            $this->message = 'Valor mensal alterado com sucesso!';
+            $this->messageType = 'success';
+            $this->loadCarteira();
+        } catch (\Throwable $e) {
+            $this->message = $e->getMessage();
+            $this->messageType = 'error';
+        }
     }
 
     public function render()

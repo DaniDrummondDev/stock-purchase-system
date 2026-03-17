@@ -226,6 +226,26 @@
 
 ---
 
+## [ ] Sprint 12 — AI Config UI + Bugfixes
+**Objetivo:** Painel admin para configuração de AI providers + correção de bugs críticos
+
+### 12a — Bugfixes Críticos
+- [x] 12a.1 — Registrar middleware aliases Spatie (role, permission, role_or_permission) em bootstrap/app.php
+- [x] 12a.2 — Criar migration da tabela notifications (database notifications do Laravel)
+- [x] 12a.3 — Proteger rotas API admin com middleware role:admin|analyst
+- [x] 12a.4 — Incluir NotificationBell no layout de navegação
+- [x] 12a.5 — Alinhar roles entre rota e CestaManager (aceitar auditor)
+- [x] 12a.6 — Tests (10 new: RBAC middleware web + API, notifications table, alerts page)
+
+### 12b — AI Config Panel
+- [x] 12b.1 — AiConfigPanel Livewire (global config para LLM + Embeddings, select provider, API key encrypted, model, base URL)
+- [x] 12b.2 — Testar Conexão (validação de API key com chamada real ao provider, marca validated_at)
+- [x] 12b.3 — Toggle ativo/inativo + badge de source (DB Global, .env fallback, Não configurado)
+- [x] 12b.4 — Rota /admin/ai-config protegida com role:admin + link na navegação
+- [ ] 12b.5 — Tests (AiConfigPanel render, save, toggle)
+
+---
+
 ## Reference Docs
 
 - [System Design Spec](superpowers/specs/2026-03-15-stock-purchase-system-design.md)

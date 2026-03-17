@@ -13,7 +13,7 @@ use App\Domain\MarketData\Repositories\CotacaoRepositoryInterface;
 use App\Infrastructure\AI\AiConfigResolver;
 use App\Infrastructure\Persistence\Models\AtivoEmbedding;
 use App\Infrastructure\Persistence\Models\Cotacao;
-use Laravel\Ai\Ai;
+use Laravel\Ai\AnonymousAgent;
 
 final class RecommendationService implements RecommendationServiceInterface
 {
@@ -42,7 +42,10 @@ final class RecommendationService implements RecommendationServiceInterface
         }
 
         $tickers = $cesta->tickers();
-        $percentuais = $cesta->percentualPorTicker();
+        $percentuais = [];
+        foreach ($tickers as $ticker) {
+            $percentuais[$ticker] = $cesta->percentualPorTicker($ticker) ?? 0.0;
+        }
 
         // Build current basket summary
         $currentBasketSummary = [];
@@ -53,54 +56,39 @@ final class RecommendationService implements RecommendationServiceInterface
             ];
         }
 
-        // Get embeddings for current basket tickers
+        // Try embedding-based recommendation first
         $compositeEmbedding = $this->buildCompositeEmbedding($tickers, $percentuais);
 
-        if ($compositeEmbedding === null) {
-            return new RecommendationResult(
-                suggestedTickers: [],
-                currentBasketSummary: $currentBasketSummary,
-                confidence: 0.0,
-                generatedAt: new \DateTimeImmutable,
-            );
+        if ($compositeEmbedding !== null) {
+            $candidates = AtivoEmbedding::similarTo($compositeEmbedding, $limit + 5, $tickers);
+
+            if ($candidates->isNotEmpty()) {
+                $candidateTickers = $candidates->pluck('ticker')->toArray();
+                $cotacoes = $this->cotacaoRepo->findLatestByTickers($candidateTickers);
+                $cotacaoMap = [];
+                foreach ($cotacoes as $cotacao) {
+                    $cotacaoMap[$cotacao->ticker()] = $cotacao;
+                }
+
+                $candidateInfo = [];
+                foreach ($candidates->take($limit) as $candidate) {
+                    $ticker = $candidate->ticker;
+                    $cotacao = $cotacaoMap[$ticker] ?? null;
+                    $candidateInfo[] = [
+                        'ticker' => $ticker,
+                        'distance' => round((float) $candidate->distance, 4),
+                        'preco_fechamento' => $cotacao?->precoFechamento(),
+                        'volume' => $cotacao?->volume(),
+                        'metadata' => $candidate->metadata,
+                    ];
+                }
+
+                return $this->generateRecommendation($candidateInfo, $currentBasketSummary, $limit);
+            }
         }
 
-        // Find similar tickers via pgvector, excluding current basket
-        $candidates = AtivoEmbedding::similarTo($compositeEmbedding, $limit + 5, $tickers);
-
-        if ($candidates->isEmpty()) {
-            return new RecommendationResult(
-                suggestedTickers: [],
-                currentBasketSummary: $currentBasketSummary,
-                confidence: 0.0,
-                generatedAt: new \DateTimeImmutable,
-            );
-        }
-
-        // Get cotacao data for candidates
-        $candidateTickers = $candidates->pluck('ticker')->toArray();
-        $cotacoes = $this->cotacaoRepo->findLatestByTickers($candidateTickers);
-        $cotacaoMap = [];
-        foreach ($cotacoes as $cotacao) {
-            $cotacaoMap[$cotacao->ticker()] = $cotacao;
-        }
-
-        // Build candidate info for LLM
-        $candidateInfo = [];
-        foreach ($candidates->take($limit) as $candidate) {
-            $ticker = $candidate->ticker;
-            $cotacao = $cotacaoMap[$ticker] ?? null;
-            $candidateInfo[] = [
-                'ticker' => $ticker,
-                'distance' => round((float) $candidate->distance, 4),
-                'preco_fechamento' => $cotacao?->precoFechamento(),
-                'volume' => $cotacao?->volume(),
-                'metadata' => $candidate->metadata,
-            ];
-        }
-
-        // Use LLM to generate rationale and allocations
-        return $this->generateRecommendation($candidateInfo, $currentBasketSummary, $limit);
+        // Fallback: use LLM directly without embeddings
+        return $this->generateDirectLlmRecommendation($currentBasketSummary, $limit);
     }
 
     /**
@@ -206,6 +194,25 @@ final class RecommendationService implements RecommendationServiceInterface
     }
 
     /**
+     * Apply DB-stored API key and model to Laravel AI config at runtime.
+     */
+    private function applyRuntimeConfig(string $purpose): string
+    {
+        $config = $this->configResolver->resolve($purpose);
+        $provider = $config['provider'];
+
+        if (! empty($config['api_key'])) {
+            config(["ai.providers.{$provider}.key" => $config['api_key']]);
+        }
+
+        if (! empty($config['settings']['model'])) {
+            config(["ai.providers.{$provider}.model" => $config['settings']['model']]);
+        }
+
+        return $provider;
+    }
+
+    /**
      * Use LLM to generate rationale and percentage allocations.
      */
     private function generateRecommendation(
@@ -213,17 +220,19 @@ final class RecommendationService implements RecommendationServiceInterface
         array $currentBasketSummary,
         int $limit,
     ): RecommendationResult {
-        $provider = $this->configResolver->resolveProviderName('llm');
+        $provider = $this->applyRuntimeConfig('llm');
 
         $prompt = $this->buildRecommendationPrompt($candidateInfo, $currentBasketSummary, $limit);
 
         try {
-            $response = Ai::agent()
-                ->using($provider)
-                ->withInstructions('Você é um analista financeiro especializado em ações brasileiras. Responda APENAS em JSON válido, sem markdown.')
-                ->prompt($prompt);
+            $agent = new AnonymousAgent(
+                instructions: 'Você é um analista financeiro especializado em ações brasileiras. Responda APENAS em JSON válido, sem markdown.',
+                messages: [],
+                tools: [],
+            );
+            $response = $agent->prompt($prompt, provider: $provider);
 
-            $parsed = json_decode($response->text(), true);
+            $parsed = json_decode($response->text, true);
 
             if (! is_array($parsed) || ! isset($parsed['suggestions'])) {
                 return $this->fallbackRecommendation($candidateInfo, $currentBasketSummary);
@@ -244,6 +253,70 @@ final class RecommendationService implements RecommendationServiceInterface
             );
         } catch (\Throwable) {
             return $this->fallbackRecommendation($candidateInfo, $currentBasketSummary);
+        }
+    }
+
+    /**
+     * Generate recommendation directly from LLM when no embeddings/cotações exist.
+     */
+    private function generateDirectLlmRecommendation(array $currentBasketSummary, int $limit): RecommendationResult
+    {
+        $provider = $this->applyRuntimeConfig('llm');
+        $currentJson = json_encode($currentBasketSummary, JSON_PRETTY_PRINT);
+
+        $prompt = <<<PROMPT
+        Você é um analista financeiro especializado em ações brasileiras (B3).
+        Analise a cesta Top Five atual e sugira uma nova composição otimizada de {$limit} ativos.
+
+        Cesta atual:
+        {$currentJson}
+
+        Considere diversificação setorial, liquidez e fundamentos.
+        Responda APENAS em JSON válido (sem markdown) com este formato:
+        {
+            "suggestions": [
+                {"ticker": "XXXX3", "percentual": 25.0, "similarity_score": 0.85, "rationale": "Explicação breve em português"}
+            ],
+            "confidence": 0.65
+        }
+
+        Regras:
+        - Use tickers reais da B3 (ex: PETR4, VALE3, ITUB4, WEGE3, ABEV3, BBDC4, etc.)
+        - Os percentuais devem somar exatamente 100%
+        - Cada percentual deve ser > 0
+        - O confidence deve ser entre 0.5 e 0.7 (sem dados de mercado reais, a confiança é moderada)
+        - A rationale deve mencionar o setor e motivo da sugestão
+        PROMPT;
+
+        try {
+            $agent = new AnonymousAgent(
+                instructions: 'Você é um analista financeiro especializado em ações brasileiras. Responda APENAS em JSON válido, sem markdown.',
+                messages: [],
+                tools: [],
+            );
+            $response = $agent->prompt($prompt, provider: $provider);
+
+            $parsed = json_decode($response->text, true);
+
+            if (! is_array($parsed) || ! isset($parsed['suggestions'])) {
+                return $this->fallbackRecommendation([], $currentBasketSummary);
+            }
+
+            $suggestedTickers = array_map(fn ($s) => [
+                'ticker' => $s['ticker'],
+                'percentual' => (float) ($s['percentual'] ?? 20.0),
+                'similarityScore' => (float) ($s['similarity_score'] ?? 0.0),
+                'rationale' => $s['rationale'] ?? '',
+            ], array_slice($parsed['suggestions'], 0, $limit));
+
+            return new RecommendationResult(
+                suggestedTickers: $suggestedTickers,
+                currentBasketSummary: $currentBasketSummary,
+                confidence: (float) ($parsed['confidence'] ?? 0.5),
+                generatedAt: new \DateTimeImmutable,
+            );
+        } catch (\Throwable) {
+            return $this->fallbackRecommendation([], $currentBasketSummary);
         }
     }
 
